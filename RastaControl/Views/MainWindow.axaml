@@ -33,6 +33,7 @@
                     <StackPanel Spacing="15">
                         <Button Content="Continue Stopped Conversion" BorderThickness="1" BorderBrush="Black"
                                 Background="Gainsboro" HorizontalAlignment="Stretch"
+                                IsDefault="False"
                                 Command="{Binding ContinueConvert}"
                                 HorizontalContentAlignment="Center" IsEnabled="{Binding CanContinue}" />
                         <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Source">

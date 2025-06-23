@@ -1,2 +1,4 @@
 ﻿/RastaControl/bin/
 /RastaControl/obj/
+**/bin/
+**/obj/

@@ -104,7 +104,7 @@ public class RastaControlViewModel : ViewModelBase
     private Window? _window;
 
     // Input
-    private bool _canContinue;
+    private bool _canContinue = true;
 
     public bool CanContinue
     {
@@ -751,90 +751,11 @@ public class RastaControlViewModel : ViewModelBase
         RastConverterFullCommandLine = fullCommandLine;
     }
 
-    /*
-    private void GenerateRastaCommand(bool isPreview = false, bool isContinue = false)
-    {
-        // source file
-        _rastaCommandLineArguments = " /i=" + SafeCommand.QuoteIfNeeded(SourceFilePath);
-
-        // Destination
-        if (!isContinue)
-            _rastaCommandLineArguments += " /o=" + SafeCommand.QuoteIfNeeded(FullDestinationFileName);
-
-        // Height
-        if (!AutoHeight)
-            _rastaCommandLineArguments += " /h=" + Height;
-
-        // Resize Filter
-        _rastaCommandLineArguments += " /filter=" + SelectedResizeFilter;
-
-        // Pallette
-        _rastaCommandLineArguments +=
-            " /pal=" + SafeCommand.QuoteIfNeeded(Path.Combine(_settings.PaletteDirectory,
-                SelectedPalette.Trim() + ".act"));
-
-        // Preprocess Colour Distance
-        _rastaCommandLineArguments += " /predistance=" + SelectedPreColourDistance;
-
-        // Dithering
-        _rastaCommandLineArguments += " /dither=" + SelectedDithering;
-        if (SelectedDithering != "none")
-        {
-            _rastaCommandLineArguments += " /dither_val=" + DitheringStrength;
-            _rastaCommandLineArguments += " /dither_rand=" + DitheringRandomness;
-        }
-
-        // Brightness
-        _rastaCommandLineArguments += " /brightness=" + Brightness;
-
-        // Contrast
-        _rastaCommandLineArguments += " /contrast=" + Contrast;
-
-        // Gamma
-        _rastaCommandLineArguments += " /gamma=" + Gamma;
-
-        // Mask
-        if (MaskFilePath != string.Empty)
-        {
-            _rastaCommandLineArguments += " /details=" + SafeCommand.QuoteIfNeeded(MaskFilePath);
-            _rastaCommandLineArguments += " /details_val=" + MaskStrength;
-        }
-
-        // Register On/Off
-        if (RegisterOnOffFilePath != string.Empty)
-        {
-            _rastaCommandLineArguments += " /onoff=" + SafeCommand.QuoteIfNeeded(RegisterOnOffFilePath);
-        }
-
-        // Colour Distance
-        _rastaCommandLineArguments += " /distance=" + SelectedColourDistance;
-
-        // Initial State
-        _rastaCommandLineArguments += " /init=" + SelectedInitialState;
-
-        // Number of Solutions
-        _rastaCommandLineArguments += " /s=" + NumberOfSolutions;
-
-        // Auto Save Every
-        _rastaCommandLineArguments += " /save=" + SelectedAutoSavePeriod;
-
-        // Threads
-        _rastaCommandLineArguments += " /threads=" + SelectedThread;
-
-        if (isPreview)
-            _rastaCommandLineArguments += " /preprocess";
-
-        if (isContinue)
-            _rastaCommandLineArguments += " /continue";
-
-        RastConverterFullCommandLine = _settings.RastaConverterCommand + " " + _rastaCommandLineArguments;
-    }
-    */
-
     public async Task ContinueConvert()
     {
         // GenerateRastaCommand(false, true);
-        //  await RastaConverter.ExecuteRastaConverterCommand(Settings.RastaConverterLocation,FullDestinationFileName);
+        await RastaConverter.ContinueConversion(_settings.RastaConverterCommand,FullDestinationFileName,_window);
+        
         //  await ViewImage(FullDestinationFileName.Trim());
     }
 
