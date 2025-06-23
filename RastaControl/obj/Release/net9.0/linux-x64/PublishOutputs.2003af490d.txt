@@ -1,0 +1,4 @@
+/home/nickp/Documents/RastaControl-Lin-Publix-Folder/RastaControl.pdb
+/home/nickp/Documents/RastaControl-Lin-Publix-Folder/libHarfBuzzSharp.so
+/home/nickp/Documents/RastaControl-Lin-Publix-Folder/libSkiaSharp.so
+/home/nickp/Documents/RastaControl-Lin-Publix-Folder/RastaControl
