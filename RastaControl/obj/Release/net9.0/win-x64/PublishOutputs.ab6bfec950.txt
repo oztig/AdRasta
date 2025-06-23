@@ -1,5 +1,0 @@
-C:\Users\nickp\Documents\RastaControl\RastaControl.pdb
-C:\Users\nickp\Documents\RastaControl\av_libglesv2.dll
-C:\Users\nickp\Documents\RastaControl\libHarfBuzzSharp.dll
-C:\Users\nickp\Documents\RastaControl\libSkiaSharp.dll
-C:\Users\nickp\Documents\RastaControl\RastaControl.exe

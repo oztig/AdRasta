@@ -1,4 +1,0 @@
-/home/nickp/RiderProjects/RastaControl/RastaControl/bin/Release/net9.0/linux-x64/publish/RastaControl.pdb
-/home/nickp/RiderProjects/RastaControl/RastaControl/bin/Release/net9.0/linux-x64/publish/libHarfBuzzSharp.so
-/home/nickp/RiderProjects/RastaControl/RastaControl/bin/Release/net9.0/linux-x64/publish/libSkiaSharp.so
-/home/nickp/RiderProjects/RastaControl/RastaControl/bin/Release/net9.0/linux-x64/publish/RastaControl

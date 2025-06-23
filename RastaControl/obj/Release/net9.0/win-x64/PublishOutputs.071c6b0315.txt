@@ -1,5 +1,0 @@
-/home/nickp/Documents/RastaControl-Win/RastaControl.pdb
-/home/nickp/Documents/RastaControl-Win/av_libglesv2.dll
-/home/nickp/Documents/RastaControl-Win/libHarfBuzzSharp.dll
-/home/nickp/Documents/RastaControl-Win/libSkiaSharp.dll
-/home/nickp/Documents/RastaControl-Win/RastaControl.exe

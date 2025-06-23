@@ -1,5 +1,0 @@
-/home/nickp/Documents/RastaControl-Linux/RastaControl.pdb
-/home/nickp/Documents/RastaControl-Linux/libAvaloniaNative.dylib
-/home/nickp/Documents/RastaControl-Linux/libHarfBuzzSharp.dylib
-/home/nickp/Documents/RastaControl-Linux/libSkiaSharp.dylib
-/home/nickp/Documents/RastaControl-Linux/RastaControl

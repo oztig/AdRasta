@@ -1,5 +1,0 @@
-/home/nickp/RiderProjects/RastaControl/RastaControl/bin/Release/net9.0/win-x64/publish/RastaControl.pdb
-/home/nickp/RiderProjects/RastaControl/RastaControl/bin/Release/net9.0/win-x64/publish/av_libglesv2.dll
-/home/nickp/RiderProjects/RastaControl/RastaControl/bin/Release/net9.0/win-x64/publish/libHarfBuzzSharp.dll
-/home/nickp/RiderProjects/RastaControl/RastaControl/bin/Release/net9.0/win-x64/publish/libSkiaSharp.dll
-/home/nickp/RiderProjects/RastaControl/RastaControl/bin/Release/net9.0/win-x64/publish/RastaControl.exe

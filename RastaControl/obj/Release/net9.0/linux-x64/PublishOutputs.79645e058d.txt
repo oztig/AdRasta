@@ -1,4 +1,0 @@
-/home/nickp/Documents/RastaControl-Linux/RastaControl.pdb
-/home/nickp/Documents/RastaControl-Linux/libHarfBuzzSharp.so
-/home/nickp/Documents/RastaControl-Linux/libSkiaSharp.so
-/home/nickp/Documents/RastaControl-Linux/RastaControl
