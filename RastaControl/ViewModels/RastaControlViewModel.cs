@@ -54,7 +54,7 @@ public class RastaControlViewModel : ViewModelBase
     }
 
     private string FullDestinationFileName => DestinationFolderPath.Trim() +
-                                              Path.GetFileNameWithoutExtension(SourceFileBasename).Trim() + ".png";
+                                              DestinationFileBaseName.Trim() + ".png";
 
     private bool _isExpanded;
     private double _previousHeight;
@@ -132,6 +132,7 @@ public class RastaControlViewModel : ViewModelBase
         set
         {
             this.RaiseAndSetIfChanged(ref _destinationFolder, value);
+            CopySourceImageToDestination();
             SetPreviewAndConvertButtons();
         }
     }
@@ -145,7 +146,18 @@ public class RastaControlViewModel : ViewModelBase
         {
             value = Path.GetFileName(value);
             this.RaiseAndSetIfChanged(ref _sourceFileBasename, value);
+            SetDestinationPicker();
             SetPreviewAndConvertButtons();
+        }
+    }
+
+    public string DestinationFileBaseName
+    {
+        get
+        {
+            var ret = Path.GetFileNameWithoutExtension(SourceFileBasename) + "_c"; 
+
+            return ret;
         }
     }
 
@@ -415,6 +427,25 @@ public class RastaControlViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _canConvert, value);
     }
 
+    private bool _canSetDestination;
+
+    public bool CanSetDestination
+    {
+        get => _canSetDestination;
+        set => this.RaiseAndSetIfChanged(ref _canSetDestination, value);
+    }
+
+
+    private void CopySourceImageToDestination()
+    {
+        if (File.Exists(SourceFilePath) &&  Directory.Exists(DestinationFolderPath))
+        {
+            var newFilePath = Path.Combine(DestinationFolderPath, SourceFileBasename);
+            File.Copy(SourceFilePath,newFilePath,true);
+            SourceFilePath = newFilePath;
+        }
+    }
+    
     private void PopulateDefaultValues()
     {
         Brightness = 0;
@@ -615,6 +646,10 @@ public class RastaControlViewModel : ViewModelBase
         var result = await messageBox.ShowWindowDialogAsync(_window);
     }
 
+    private void SetDestinationPicker()
+    {
+        CanSetDestination = _sourceFilePath != String.Empty;
+    }
     private void SetPreviewAndConvertButtons()
     {
         // Can Preview rules - subject to change!

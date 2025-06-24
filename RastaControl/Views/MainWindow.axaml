@@ -51,6 +51,7 @@
                                     ToolTip.Tip="{Binding DestinationFolderPath}"
                                     Background="Gainsboro" HorizontalAlignment="Stretch"
                                     HorizontalContentAlignment="Left" Command="{Binding PickFolderCommand}"
+                                    IsEnabled="{Binding CanSetDestination}"
                                     Content="{Binding DestinationFolderPath}" />
                         </HeaderedContentControl>
                         <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
