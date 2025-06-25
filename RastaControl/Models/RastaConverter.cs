@@ -35,18 +35,19 @@ public class RastaConverter
         }
     }
 
-    public async Task ContinueConversion(string commandLocation, string SourceFile, Window _window)
+    public async Task ContinueConversion(string commandLocation,string sourceFile, string conversionFile, Window _window)
     {
-        var baseDirectory = Path.GetDirectoryName(SourceFile);
+        var baseDirectory = Path.GetDirectoryName(conversionFile);
         var continueDirectory = Path.Combine(baseDirectory, ".Continue");
-        var baseCopyFileName = Path.GetFileName(SourceFile);
+        var baseCopyFileName = Path.GetFileName(conversionFile);
         var searchPattern = baseCopyFileName.Trim() + "*.*";
+        var baseOriginalFileName = Path.GetFileName(sourceFile);
 
         // Get all files in the 'source' file location (actually the destination file)
-        var messageBox = MessageBoxManager.GetMessageBoxStandard("Continue Conversion",
+        /*var messageBox = MessageBoxManager.GetMessageBoxStandard("Continue Conversion",
             "Continuing Conversion of :" + SourceFile + "\n\nUsing: " + commandLocation);
 
-        var result = await messageBox.ShowWindowDialogAsync(_window);
+        var result = await messageBox.ShowWindowDialogAsync(_window);*/
 
         try
         {
@@ -55,6 +56,7 @@ public class RastaConverter
 
             // Copy the images to the .Continue Directory
             await FileUtils.CopyMatchingFilesAsync(baseDirectory, continueDirectory, searchPattern);
+            await FileUtils.CopyMatchingFilesAsync(baseDirectory, continueDirectory, baseOriginalFileName);
             
             // Rename the files in the .Continue Directory
             await FileUtils.RenameMatchingFilesAsync(continueDirectory, baseCopyFileName,"*.*", "output.png");

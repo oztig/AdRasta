@@ -30,14 +30,11 @@ public class FileUtils
 
             foreach (var originalFile in files)
             {
-                if (Path.GetFileName(originalFile).Trim() != baseFileName)
-                {
-                    var newPath = originalFile.Replace(baseFileName, replaceWithPattern);
-                    File.Move(originalFile, newPath, overwrite: true);
-                    File.SetCreationTime(newPath,DateTime.Now);
-                    File.SetLastWriteTime(newPath, DateTime.Now);
-                    File.SetLastAccessTime(newPath, DateTime.Now);
-                }
+                var newPath = originalFile.Replace(baseFileName, replaceWithPattern);
+                File.Move(originalFile, newPath, overwrite: true);
+                File.SetCreationTime(newPath, DateTime.Now);
+                File.SetLastWriteTime(newPath, DateTime.Now);
+                File.SetLastAccessTime(newPath, DateTime.Now);
             }
         });
     }

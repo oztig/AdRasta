@@ -219,7 +219,8 @@
                                           Margin="0,0,3,0" />
                             </HeaderedContentControl>
                             <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Threads">
-                                <ComboBox ItemsSource="{Binding SourceData.TotalThreads}" SelectedItem="{Binding SelectedThread }"
+                                <ComboBox ItemsSource="{Binding SourceData.TotalThreads}"
+                                          SelectedItem="{Binding SelectedThread }"
                                           HorizontalAlignment="Stretch" />
                             </HeaderedContentControl>
                         </StackPanel>
@@ -259,11 +260,12 @@
                                     HorizontalContentAlignment="Center" IsEnabled="{Binding CanConvert}" />
                         </Border>
 
-                        
+
                     </StackPanel>
                 </HeaderedContentControl>
             </Grid>
-            <Expander IsExpanded="{Binding IsExpanded}" HorizontalAlignment="Stretch" IsVisible="True" Margin="0,15,0,0">
+            <Expander IsExpanded="{Binding IsExpanded}" HorizontalAlignment="Stretch" IsVisible="True"
+                      Margin="0,15,0,0">
                 <Expander.Header>
                     Command Line
                 </Expander.Header>

@@ -44,6 +44,13 @@ public class RastaControlViewModel : ViewModelBase
     public RastaConverter RastaConverter { get; } = new();
     public rc2mch rc2mch { get; } = new();
 
+    private bool _isBusy;
+
+    public bool IsBusy
+    {
+        get => _isBusy;
+        set => this.RaiseAndSetIfChanged(ref _isBusy, value);
+    }
 
     private string _rastConverterFullCommandLine = string.Empty;
 
@@ -151,15 +158,8 @@ public class RastaControlViewModel : ViewModelBase
         }
     }
 
-    public string DestinationFileBaseName
-    {
-        get
-        {
-            var ret = Path.GetFileNameWithoutExtension(SourceFileBasename) + "_c"; 
-
-            return ret;
-        }
-    }
+    public string DestinationFileBaseName => Path.GetFileNameWithoutExtension(SourceFileBasename) + "_c";
+    private string _destinationFileExecutableName => Path.GetFileNameWithoutExtension(SourceFileBasename);
 
     private bool _autoHeight = true;
 
@@ -435,17 +435,20 @@ public class RastaControlViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _canSetDestination, value);
     }
 
-
     private void CopySourceImageToDestination()
     {
-        if (File.Exists(SourceFilePath) &&  Directory.Exists(DestinationFolderPath))
+        if (File.Exists(SourceFilePath) && Directory.Exists(DestinationFolderPath))
         {
             var newFilePath = Path.Combine(DestinationFolderPath, SourceFileBasename);
-            File.Copy(SourceFilePath,newFilePath,true);
-            SourceFilePath = newFilePath;
+
+            if (SourceFilePath != newFilePath)
+            {
+                File.Copy(SourceFilePath, newFilePath, true);
+                SourceFilePath = newFilePath;
+            }
         }
     }
-    
+
     private void PopulateDefaultValues()
     {
         Brightness = 0;
@@ -573,18 +576,19 @@ public class RastaControlViewModel : ViewModelBase
     {
         var safeCommand = _settings.MadsLocation;
         var safeParams = _settings.NoNameFilesLocation;
-        var executableFilename = Path.GetFileNameWithoutExtension(FullDestinationFileName)?.Trim();
+        var executableFilename = Path.GetFileNameWithoutExtension(_destinationFileExecutableName)?.Trim();
         var fullExePath = "";
 
-        var userInput = await DialogService.ShowInputDialogAsync("Executable Name (no .xex extension required)",executableFilename, "destination name, no .xex required",_window);
+        var userInput = await DialogService.ShowInputDialogAsync("Executable Name (no .xex extension required)",
+            executableFilename, "destination name, no .xex required", _window);
         if (!(userInput.confirmed ?? false))
             return;
 
-        fullExePath = Path.Combine(Path.GetDirectoryName(FullDestinationFileName),userInput.value.Trim() + ".xex");
-        
+        fullExePath = Path.Combine(Path.GetDirectoryName(FullDestinationFileName), userInput.value.Trim() + ".xex");
+
         // Generate the .xex (sync, as need it to finish before we try and view the ouput
-        await Mads.GenerateExecutableFile(safeCommand, safeParams,FullDestinationFileName,fullExePath
-           ); //.GetAwaiter().GetResult();
+        await Mads.GenerateExecutableFile(safeCommand, safeParams, FullDestinationFileName, fullExePath
+        ); //.GetAwaiter().GetResult();
 
         /*var toView = Path.Combine(Path.GetDirectoryName(FullDestinationFileName),
             Path.GetFileNameWithoutExtension(FullDestinationFileName)?.Trim() + ".xex");*/
@@ -650,6 +654,7 @@ public class RastaControlViewModel : ViewModelBase
     {
         CanSetDestination = _sourceFilePath != String.Empty;
     }
+
     private void SetPreviewAndConvertButtons()
     {
         // Can Preview rules - subject to change!
@@ -726,13 +731,17 @@ public class RastaControlViewModel : ViewModelBase
 
     private IReadOnlyList<string> GenerateRastaArguments(bool isPreview = false, bool isContinue = false)
     {
-        var args = new List<string>
-        {
-            $"/i={SourceFilePath}"
-        };
+        var args = new List<string>();
 
-        if (!isContinue)
-            args.Add($"/o={FullDestinationFileName}");
+        if (isContinue)
+        {
+            args.Add("/continue");
+            GenerateContinueCommandLineString(args);
+            return args;
+        }
+
+        args.Add($"/i={SourceFilePath}");
+        args.Add($"/o={FullDestinationFileName}");
 
         if (!AutoHeight)
             args.Add($"/h={Height}");
@@ -772,9 +781,6 @@ public class RastaControlViewModel : ViewModelBase
         if (isPreview)
             args.Add("/preprocess");
 
-        if (isContinue)
-            args.Add("/continue");
-
         GenerateFullCommandLineString(args);
 
         return args;
@@ -786,11 +792,19 @@ public class RastaControlViewModel : ViewModelBase
         RastConverterFullCommandLine = fullCommandLine;
     }
 
+    private void GenerateContinueCommandLineString(IReadOnlyList<string> argsString)
+    {
+        var fullCommandLine = $"{_settings.RastaConverterCommand} {string.Join(" ", argsString)}";
+        RastConverterFullCommandLine = fullCommandLine;
+    }
+
     public async Task ContinueConvert()
     {
-        // GenerateRastaCommand(false, true);
-        await RastaConverter.ContinueConversion(_settings.RastaConverterCommand,FullDestinationFileName,_window);
-        
+        IsBusy = true;
+        await RastaConverter.ContinueConversion(_settings.RastaConverterCommand, SourceFilePath,
+            FullDestinationFileName, _window);
+
+        IsBusy = false;
         //  await ViewImage(FullDestinationFileName.Trim());
     }
 
