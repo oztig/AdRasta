@@ -29,6 +29,8 @@ namespace RastaControl.ViewModels;
 
 public class RastaControlViewModel : ViewModelBase
 {
+   
+    
     private WindowIcon? _icon;
 
     public WindowIcon? AppIcon
@@ -729,16 +731,9 @@ public class RastaControlViewModel : ViewModelBase
         }
     }
 
-    private IReadOnlyList<string> GenerateRastaArguments(bool isPreview = false, bool isContinue = false)
+    private async Task<IReadOnlyList<string>> GenerateRastaArguments(bool isPreview = false, bool isContinue = false)
     {
         var args = new List<string>();
-
-        if (isContinue)
-        {
-            args.Add("/continue");
-            GenerateContinueCommandLineString(args);
-            return args;
-        }
 
         args.Add($"/i={SourceFilePath}");
         args.Add($"/o={FullDestinationFileName}");
@@ -781,27 +776,18 @@ public class RastaControlViewModel : ViewModelBase
         if (isPreview)
             args.Add("/preprocess");
 
-        GenerateFullCommandLineString(args);
+        if (isContinue)
+            args.Add("/continue");
+
+        RastConverterFullCommandLine = await RastaConverter.GenerateFullCommandLineString(_settings, args);
 
         return args;
-    }
-
-    private void GenerateFullCommandLineString(IReadOnlyList<string> argsString)
-    {
-        var fullCommandLine = $"{_settings.RastaConverterCommand} {string.Join(" ", argsString)}";
-        RastConverterFullCommandLine = fullCommandLine;
-    }
-
-    private void GenerateContinueCommandLineString(IReadOnlyList<string> argsString)
-    {
-        var fullCommandLine = $"{_settings.RastaConverterCommand} {string.Join(" ", argsString)}";
-        RastConverterFullCommandLine = fullCommandLine;
     }
 
     public async Task ContinueConvert()
     {
         IsBusy = true;
-        await RastaConverter.ContinueConversion(_settings.RastaConverterCommand, SourceFilePath,
+        await RastaConverter.ContinueConversion(_settings, SourceFilePath,
             FullDestinationFileName, _window);
 
         IsBusy = false;
@@ -813,7 +799,7 @@ public class RastaControlViewModel : ViewModelBase
         // GenerateRastaCommand();
 
         var safeCommand = _settings.RastaConverterCommand;
-        var safeParams = GenerateRastaArguments(); // _rastaCommandLineArguments;
+        var safeParams = await GenerateRastaArguments(); // _rastaCommandLineArguments;
 
         await RastaConverter.ExecuteRastaConverterCommand(safeCommand, safeParams);
         await ViewImage(FullDestinationFileName.Trim());
@@ -829,7 +815,7 @@ public class RastaControlViewModel : ViewModelBase
         //  GenerateRastaCommand(true);
 
         var safeCommand = _settings.RastaConverterCommand;
-        var safeParams = GenerateRastaArguments(true); // _rastaCommandLineArguments;
+        var safeParams = await GenerateRastaArguments(true); // _rastaCommandLineArguments;
         var viewFileName = FullDestinationFileName.Trim() + "-dst.png";
 
         await RastaConverter.ExecuteRastaConverterCommand(safeCommand, safeParams);

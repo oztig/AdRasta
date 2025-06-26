@@ -27,263 +27,279 @@
             </MenuItem>
         </Menu>
 
-        <StackPanel Margin="5,5,5,10">
-            <Grid RowDefinitions="2*,1*" ColumnDefinitions="Auto,2*" ColumnSpacing="15" RowSpacing="15">
-                <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Input">
-                    <StackPanel Spacing="15">
-                        <Button Content="Continue Stopped Conversion" BorderThickness="1" BorderBrush="Black"
-                                Background="Gainsboro" HorizontalAlignment="Stretch"
-                                IsDefault="False"
-                                Command="{Binding ContinueConvert}"
-                                HorizontalContentAlignment="Center" IsEnabled="{Binding CanContinue}" />
-                        <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Source">
-                            <StackPanel>
-                                <Button Content="{Binding SourceFileBasename}" BorderThickness="1" BorderBrush="Black"
-                                        Background="Gainsboro" HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Left"
-                                        ToolTip.Tip="{Binding SourceFilePath}"
-                                        Command="{Binding PickFileCommand}"
-                                        CommandParameter="{Binding SourceFileTypeAction}" />
-                            </StackPanel>
-                        </HeaderedContentControl>
-                        <HeaderedContentControl Header="Destination Folder">
-                            <Button BorderThickness="1" BorderBrush="Black"
-                                    ToolTip.Tip="{Binding DestinationFolderPath}"
-                                    Background="Gainsboro" HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Left" Command="{Binding PickFolderCommand}"
-                                    IsEnabled="{Binding CanSetDestination}"
-                                    Content="{Binding DestinationFolderPath}" />
-                        </HeaderedContentControl>
-                        <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
-                            <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Height">
-                                <StackPanel Orientation="Horizontal" Spacing="20">
-                                    <CheckBox x:Name="ChkAutoHeight" IsChecked="{Binding AutoHeight}">Auto</CheckBox>
-                                    <NumericUpDown IsEnabled="{Binding HeightEnabled}" Minimum="1" Maximum="240"
-                                                   Value="{Binding Height}" Increment="1">
-                                    </NumericUpDown>
-                                </StackPanel>
-                            </HeaderedContentControl>
-                            <HeaderedContentControl Grid.Row="0" Grid.Column="1" Header="Resize Filter">
-                                <ComboBox HorizontalAlignment="Stretch"
-                                          ItemsSource="{Binding   SourceData.ResizeFilters}"
-                                          SelectedItem="{Binding SelectedResizeFilter}" />
-                            </HeaderedContentControl>
-                        </Grid>
-                        <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Palette">
-                            <ComboBox ItemsSource="{Binding   SourceData.Palettes}"
-                                      SelectedItem="{Binding SelectedPalette}"
-                                      HorizontalAlignment="Stretch" />
-                        </HeaderedContentControl>
-                    </StackPanel>
-                </HeaderedContentControl>
-                <HeaderedContentControl Grid.Row="0" Grid.Column="1" Header="Preprocess">
-                    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,3*" ColumnSpacing="15">
+        <Grid>
+            <StackPanel Margin="5,5,5,10">
+                <Grid RowDefinitions="2*,1*" ColumnDefinitions="Auto,2*" ColumnSpacing="15" RowSpacing="15">
+                    <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Input">
                         <StackPanel Spacing="15">
-                            <HeaderedContentControl Header="Colour distance">
-                                <ComboBox ItemsSource="{Binding SourceData.PreColourDistance}"
-                                          SelectedItem="{Binding SelectedPreColourDistance}"
-                                          HorizontalAlignment="Stretch" />
-                            </HeaderedContentControl>
-                            <HeaderedContentControl Header="Dithering">
-                                <StackPanel Spacing="15">
-                                    <HeaderedContentControl Header="Type">
-                                        <ComboBox ItemsSource="{Binding SourceData.Dithering}"
-                                                  SelectedItem="{Binding SelectedDithering}"
-                                                  HorizontalAlignment="Stretch" />
-                                    </HeaderedContentControl>
-                                    <HeaderedContentControl Header="Strength">
-                                        <NumericUpDown HorizontalAlignment="Stretch" Minimum="0" Maximum="3"
-                                                       Increment="0.1" Value="{Binding DitheringStrength}">
-                                        </NumericUpDown>
-                                    </HeaderedContentControl>
-                                    <HeaderedContentControl Header="Randomness">
-                                        <NumericUpDown HorizontalAlignment="Stretch" Minimum="0" Maximum="1"
-                                                       Increment="0.1" Value="{Binding DitheringRandomness}">
-                                        </NumericUpDown>
-                                    </HeaderedContentControl>
-                                </StackPanel>
-                            </HeaderedContentControl>
-                        </StackPanel>
-                        <Grid Grid.Row="0" Grid.Column="1" RowSpacing="15" RowDefinitions="3*,1*"
-                              VerticalAlignment="Stretch">
-                            <HeaderedContentControl Header="Colour correction">
-                                <StackPanel Spacing="15">
-                                    <HeaderedContentControl Header="Brightness">
-                                        <StackPanel Orientation="Horizontal" Spacing="15">
-                                            <NumericUpDown Minimum="-100" Maximum="100" Increment="1"
-                                                           Value="{Binding Brightness}"
-                                                           Width="10" TextAlignment="Center"
-                                                           VerticalContentAlignment="Center"
-                                                           ShowButtonSpinner="False" ParsingNumberStyle="Integer">
-                                            </NumericUpDown>
-                                            <Slider x:Name="SliderBrightness" Width="520" Height="35"
-                                                    VerticalAlignment="Center" Minimum="-100"
-                                                    Maximum="100" Value="{Binding Brightness}" TickFrequency="1"
-                                                    IsSnapToTickEnabled="True" IsTabStop="False">
-                                            </Slider>
-                                        </StackPanel>
-                                    </HeaderedContentControl>
-                                    <HeaderedContentControl Header="Contrast">
-                                        <StackPanel Orientation="Horizontal" Spacing="15">
-                                            <NumericUpDown Minimum="-100" Maximum="100" Increment="1"
-                                                           Value="{Binding Contrast}"
-                                                           TextAlignment="Center" VerticalContentAlignment="Center"
-                                                           ShowButtonSpinner="False" ParsingNumberStyle="Integer">
-                                            </NumericUpDown>
-                                            <Slider x:Name="SliderContrast" Width="520" Height="35" Minimum="-100"
-                                                    Maximum="100" Value="{Binding Contrast}"
-                                                    TickFrequency="1" IsSnapToTickEnabled="True" IsTabStop="False">
-                                            </Slider>
-                                        </StackPanel>
-                                    </HeaderedContentControl>
-                                    <HeaderedContentControl Header="Gamma">
-                                        <StackPanel Orientation="Horizontal" Spacing="15">
-                                            <NumericUpDown Minimum="0" Maximum="8" Increment="0.1"
-                                                           Value="{Binding  Gamma}"
-                                                           TextAlignment="Center" VerticalContentAlignment="Center"
-                                                           ShowButtonSpinner="False" FormatString="0.0">
-                                            </NumericUpDown>
-                                            <Slider x:Name="GammaSlider" Width="520" Height="35"
-                                                    Value="{Binding Gamma}" Minimum="0"
-                                                    Maximum="8" IsTabStop="False" IsSnapToTickEnabled="True"
-                                                    TickFrequency="0.1">
-                                            </Slider>
-                                        </StackPanel>
-                                    </HeaderedContentControl>
-                                </StackPanel>
-                            </HeaderedContentControl>
-                            <Button Grid.Row="1" Content="{Binding PreviewButtonText}" BorderThickness="1"
-                                    BorderBrush="Black"
+                            <Button Content="Continue Stopped Conversion" BorderThickness="1" BorderBrush="Black"
                                     Background="Gainsboro" HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Stretch"
-                                    VerticalContentAlignment="Center"
-                                    Command="{Binding PreviewImage}"
-                                    HorizontalContentAlignment="Center" IsEnabled="{Binding CanPreview}" />
-                        </Grid>
-                    </Grid>
-                </HeaderedContentControl>
-            </Grid>
-            <Grid ColumnDefinitions="Auto,2*" ColumnSpacing="15">
-                <HeaderedContentControl Header="Conversion">
-                    <StackPanel Spacing="15">
-                        <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Details">
-                            <Grid ColumnDefinitions="2*,1*,2*" ColumnSpacing="15">
-                                <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Mask"
-                                                        HorizontalAlignment="Stretch">
-                                    <Button BorderThickness="1" BorderBrush="Black" HorizontalAlignment="Stretch"
-                                            Content="{Binding MaskFileBasename}"
+                                    IsDefault="False"
+                                    Command="{Binding ContinueConvert}"
+                                    HorizontalContentAlignment="Center" IsEnabled="{Binding CanContinue}" />
+                            <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Source">
+                                <StackPanel>
+                                    <Button Content="{Binding SourceFileBasename}" BorderThickness="1"
+                                            BorderBrush="Black"
+                                            Background="Gainsboro" HorizontalAlignment="Stretch"
+                                            HorizontalContentAlignment="Left"
+                                            ToolTip.Tip="{Binding SourceFilePath}"
                                             Command="{Binding PickFileCommand}"
-                                            ToolTip.Tip="{Binding MaskFilePath}"
-                                            CommandParameter="{Binding MaskFileTypeAction}" />
+                                            CommandParameter="{Binding SourceFileTypeAction}" />
+                                </StackPanel>
+                            </HeaderedContentControl>
+                            <HeaderedContentControl Header="Destination Folder">
+                                <Button BorderThickness="1" BorderBrush="Black"
+                                        ToolTip.Tip="{Binding DestinationFolderPath}"
+                                        Background="Gainsboro" HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left" Command="{Binding PickFolderCommand}"
+                                        IsEnabled="{Binding CanSetDestination}"
+                                        Content="{Binding DestinationFolderPath}" />
+                            </HeaderedContentControl>
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Height">
+                                    <StackPanel Orientation="Horizontal" Spacing="20">
+                                        <CheckBox x:Name="ChkAutoHeight" IsChecked="{Binding AutoHeight}">Auto</CheckBox>
+                                        <NumericUpDown IsEnabled="{Binding HeightEnabled}" Minimum="1" Maximum="240"
+                                                       Value="{Binding Height}" Increment="1">
+                                        </NumericUpDown>
+                                    </StackPanel>
                                 </HeaderedContentControl>
-                                <HeaderedContentControl Grid.Row="0" Grid.Column="1" Header="Strength">
-                                    <NumericUpDown Minimum="0" Increment="1"
-                                                   Value="{Binding MaskStrength}">
-                                    </NumericUpDown>
-                                </HeaderedContentControl>
-                                <HeaderedContentControl Grid.Row="0" Grid.Column="2" Header="Register on/off">
-                                    <Grid ColumnDefinitions="2*,1*" ColumnSpacing="15" HorizontalAlignment="Stretch">
-                                        <Button Grid.Column="0" BorderThickness="1" BorderBrush="Black"
-                                                HorizontalAlignment="Stretch"
-                                                Content="{Binding RegisterOnOffFileBasename}"
-                                                Command="{Binding PickFileCommand}"
-                                                ToolTip.Tip="{Binding RegisterOnOffFilePath}"
-                                                CommandParameter="{Binding RegisterFileTypeAction}" />
-                                        <Button Grid.Column="1" BorderThickness="1" BorderBrush="Black"
-                                                HorizontalAlignment="Stretch" IsEnabled="{Binding CanEditRegisterFile}">
-                                            Edit File
-                                        </Button>
-                                    </Grid>
+                                <HeaderedContentControl Grid.Row="0" Grid.Column="1" Header="Resize Filter">
+                                    <ComboBox HorizontalAlignment="Stretch"
+                                              ItemsSource="{Binding   SourceData.ResizeFilters}"
+                                              SelectedItem="{Binding SelectedResizeFilter}" />
                                 </HeaderedContentControl>
                             </Grid>
-                        </HeaderedContentControl>
-                        <StackPanel Orientation="Horizontal" Spacing="15">
-                            <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Colour distance">
-                                <ComboBox ItemsSource="{Binding SourceData.ColourDistance}"
-                                          SelectedItem="{Binding SelectedColourDistance}"
-                                          HorizontalAlignment="Stretch" />
-                            </HeaderedContentControl>
-                            <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Initial state">
-                                <ComboBox ItemsSource="{Binding SourceData.InitialState}"
-                                          SelectedItem="{Binding SelectedInitialState}"
-                                          HorizontalAlignment="Stretch" />
-                            </HeaderedContentControl>
-                            <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="No. of solutions">
-                                <NumericUpDown Minimum="1" Maximum="999999999" Value="{Binding NumberOfSolutions }"
-                                               Increment="1">
-                                </NumericUpDown>
-                            </HeaderedContentControl>
-                            <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Auto save period">
-                                <ComboBox ItemsSource="{Binding SourceData.AutoSavePeriods}"
-                                          SelectedItem="{Binding SelectedAutoSavePeriod}" HorizontalAlignment="Stretch"
-                                          Margin="0,0,3,0" />
-                            </HeaderedContentControl>
-                            <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Threads">
-                                <ComboBox ItemsSource="{Binding SourceData.TotalThreads}"
-                                          SelectedItem="{Binding SelectedThread }"
+                            <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Palette">
+                                <ComboBox ItemsSource="{Binding   SourceData.Palettes}"
+                                          SelectedItem="{Binding SelectedPalette}"
                                           HorizontalAlignment="Stretch" />
                             </HeaderedContentControl>
                         </StackPanel>
-                    </StackPanel>
-                </HeaderedContentControl>
-                <HeaderedContentControl Grid.Row="0" Grid.Column="1" Header="Generate">
-                    <StackPanel>
-                        <Border BorderThickness="1" BorderBrush="Gray" CornerRadius="3" Padding="5">
+                    </HeaderedContentControl>
+                    <HeaderedContentControl Grid.Row="0" Grid.Column="1" Header="Preprocess">
+                        <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="Auto,3*" ColumnSpacing="15">
                             <StackPanel Spacing="15">
-                                <Grid ColumnDefinitions="1*,1*" ColumnSpacing="15">
-                                    <Button Grid.Column="0" Content="Create executable file" BorderThickness="1"
-                                            BorderBrush="Black"
-                                            Background="Gainsboro" HorizontalAlignment="Stretch"
-                                            IsEnabled="{Binding CanConvert}"
-                                            Command="{Binding GenerateExecutableCommand}"
-                                            HorizontalContentAlignment="Center" />
-                                    <Button Grid.Column="1" Content="Create MCH file" BorderThickness="1"
-                                            BorderBrush="Black"
-                                            Command="{Binding GenerateMCH}"
-                                            Background="Gainsboro" HorizontalAlignment="Stretch"
-                                            IsEnabled="{Binding CanConvert}"
-                                            HorizontalContentAlignment="Center" />
-                                </Grid>
-
-                                <Button Content="Reset all settings" BorderThickness="1" BorderBrush="Black"
-                                        Background="Gainsboro" HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Center" Command="{Binding ResetAllValues}" />
+                                <HeaderedContentControl Header="Colour distance">
+                                    <ComboBox ItemsSource="{Binding SourceData.PreColourDistance}"
+                                              SelectedItem="{Binding SelectedPreColourDistance}"
+                                              HorizontalAlignment="Stretch" />
+                                </HeaderedContentControl>
+                                <HeaderedContentControl Header="Dithering">
+                                    <StackPanel Spacing="15">
+                                        <HeaderedContentControl Header="Type">
+                                            <ComboBox ItemsSource="{Binding SourceData.Dithering}"
+                                                      SelectedItem="{Binding SelectedDithering}"
+                                                      HorizontalAlignment="Stretch" />
+                                        </HeaderedContentControl>
+                                        <HeaderedContentControl Header="Strength">
+                                            <NumericUpDown HorizontalAlignment="Stretch" Minimum="0" Maximum="3"
+                                                           Increment="0.1" Value="{Binding DitheringStrength}">
+                                            </NumericUpDown>
+                                        </HeaderedContentControl>
+                                        <HeaderedContentControl Header="Randomness">
+                                            <NumericUpDown HorizontalAlignment="Stretch" Minimum="0" Maximum="1"
+                                                           Increment="0.1" Value="{Binding DitheringRandomness}">
+                                            </NumericUpDown>
+                                        </HeaderedContentControl>
+                                    </StackPanel>
+                                </HeaderedContentControl>
                             </StackPanel>
-                        </Border>
+                            <Grid Grid.Row="0" Grid.Column="1" RowSpacing="15" RowDefinitions="3*,1*"
+                                  VerticalAlignment="Stretch">
+                                <HeaderedContentControl Header="Colour correction">
+                                    <StackPanel Spacing="15">
+                                        <HeaderedContentControl Header="Brightness">
+                                            <StackPanel Orientation="Horizontal" Spacing="15">
+                                                <NumericUpDown Minimum="-100" Maximum="100" Increment="1"
+                                                               Value="{Binding Brightness}"
+                                                               Width="10" TextAlignment="Center"
+                                                               VerticalContentAlignment="Center"
+                                                               ShowButtonSpinner="False" ParsingNumberStyle="Integer">
+                                                </NumericUpDown>
+                                                <Slider x:Name="SliderBrightness" Width="520" Height="35"
+                                                        VerticalAlignment="Center" Minimum="-100"
+                                                        Maximum="100" Value="{Binding Brightness}" TickFrequency="1"
+                                                        IsSnapToTickEnabled="True" IsTabStop="False">
+                                                </Slider>
+                                            </StackPanel>
+                                        </HeaderedContentControl>
+                                        <HeaderedContentControl Header="Contrast">
+                                            <StackPanel Orientation="Horizontal" Spacing="15">
+                                                <NumericUpDown Minimum="-100" Maximum="100" Increment="1"
+                                                               Value="{Binding Contrast}"
+                                                               TextAlignment="Center" VerticalContentAlignment="Center"
+                                                               ShowButtonSpinner="False" ParsingNumberStyle="Integer">
+                                                </NumericUpDown>
+                                                <Slider x:Name="SliderContrast" Width="520" Height="35" Minimum="-100"
+                                                        Maximum="100" Value="{Binding Contrast}"
+                                                        TickFrequency="1" IsSnapToTickEnabled="True" IsTabStop="False">
+                                                </Slider>
+                                            </StackPanel>
+                                        </HeaderedContentControl>
+                                        <HeaderedContentControl Header="Gamma">
+                                            <StackPanel Orientation="Horizontal" Spacing="15">
+                                                <NumericUpDown Minimum="0" Maximum="8" Increment="0.1"
+                                                               Value="{Binding  Gamma}"
+                                                               TextAlignment="Center" VerticalContentAlignment="Center"
+                                                               ShowButtonSpinner="False" FormatString="0.0">
+                                                </NumericUpDown>
+                                                <Slider x:Name="GammaSlider" Width="520" Height="35"
+                                                        Value="{Binding Gamma}" Minimum="0"
+                                                        Maximum="8" IsTabStop="False" IsSnapToTickEnabled="True"
+                                                        TickFrequency="0.1">
+                                                </Slider>
+                                            </StackPanel>
+                                        </HeaderedContentControl>
+                                    </StackPanel>
+                                </HeaderedContentControl>
+                                <Button Grid.Row="1" Content="{Binding PreviewButtonText}" BorderThickness="1"
+                                        BorderBrush="Black"
+                                        Background="Gainsboro" HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        VerticalContentAlignment="Center"
+                                        Command="{Binding PreviewImage}"
+                                        HorizontalContentAlignment="Center" IsEnabled="{Binding CanPreview}" />
+                            </Grid>
+                        </Grid>
+                    </HeaderedContentControl>
+                </Grid>
+                <Grid ColumnDefinitions="Auto,2*" ColumnSpacing="15">
+                    <HeaderedContentControl Header="Conversion">
+                        <StackPanel Spacing="15">
+                            <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Details">
+                                <Grid ColumnDefinitions="2*,1*,2*" ColumnSpacing="15">
+                                    <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Mask"
+                                                            HorizontalAlignment="Stretch">
+                                        <Button BorderThickness="1" BorderBrush="Black" HorizontalAlignment="Stretch"
+                                                Content="{Binding MaskFileBasename}"
+                                                Command="{Binding PickFileCommand}"
+                                                ToolTip.Tip="{Binding MaskFilePath}"
+                                                CommandParameter="{Binding MaskFileTypeAction}" />
+                                    </HeaderedContentControl>
+                                    <HeaderedContentControl Grid.Row="0" Grid.Column="1" Header="Strength">
+                                        <NumericUpDown Minimum="0" Increment="1"
+                                                       Value="{Binding MaskStrength}">
+                                        </NumericUpDown>
+                                    </HeaderedContentControl>
+                                    <HeaderedContentControl Grid.Row="0" Grid.Column="2" Header="Register on/off">
+                                        <Grid ColumnDefinitions="2*,1*" ColumnSpacing="15"
+                                              HorizontalAlignment="Stretch">
+                                            <Button Grid.Column="0" BorderThickness="1" BorderBrush="Black"
+                                                    HorizontalAlignment="Stretch"
+                                                    Content="{Binding RegisterOnOffFileBasename}"
+                                                    Command="{Binding PickFileCommand}"
+                                                    ToolTip.Tip="{Binding RegisterOnOffFilePath}"
+                                                    CommandParameter="{Binding RegisterFileTypeAction}" />
+                                            <Button Grid.Column="1" BorderThickness="1" BorderBrush="Black"
+                                                    HorizontalAlignment="Stretch"
+                                                    IsEnabled="{Binding CanEditRegisterFile}">
+                                                Edit File
+                                            </Button>
+                                        </Grid>
+                                    </HeaderedContentControl>
+                                </Grid>
+                            </HeaderedContentControl>
+                            <StackPanel Orientation="Horizontal" Spacing="15">
+                                <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Colour distance">
+                                    <ComboBox ItemsSource="{Binding SourceData.ColourDistance}"
+                                              SelectedItem="{Binding SelectedColourDistance}"
+                                              HorizontalAlignment="Stretch" />
+                                </HeaderedContentControl>
+                                <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Initial state">
+                                    <ComboBox ItemsSource="{Binding SourceData.InitialState}"
+                                              SelectedItem="{Binding SelectedInitialState}"
+                                              HorizontalAlignment="Stretch" />
+                                </HeaderedContentControl>
+                                <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="No. of solutions">
+                                    <NumericUpDown Minimum="1" Maximum="999999999" Value="{Binding NumberOfSolutions }"
+                                                   Increment="1">
+                                    </NumericUpDown>
+                                </HeaderedContentControl>
+                                <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Auto save period">
+                                    <ComboBox ItemsSource="{Binding SourceData.AutoSavePeriods}"
+                                              SelectedItem="{Binding SelectedAutoSavePeriod}"
+                                              HorizontalAlignment="Stretch"
+                                              Margin="0,0,3,0" />
+                                </HeaderedContentControl>
+                                <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Threads">
+                                    <ComboBox ItemsSource="{Binding SourceData.TotalThreads}"
+                                              SelectedItem="{Binding SelectedThread }"
+                                              HorizontalAlignment="Stretch" />
+                                </HeaderedContentControl>
+                            </StackPanel>
+                        </StackPanel>
+                    </HeaderedContentControl>
+                    <HeaderedContentControl Grid.Row="0" Grid.Column="1" Header="Generate">
+                        <StackPanel>
+                            <Border BorderThickness="1" BorderBrush="Gray" CornerRadius="3" Padding="5">
+                                <StackPanel Spacing="15">
+                                    <Grid ColumnDefinitions="1*,1*" ColumnSpacing="15">
+                                        <Button Grid.Column="0" Content="Create executable file" BorderThickness="1"
+                                                BorderBrush="Black"
+                                                Background="Gainsboro" HorizontalAlignment="Stretch"
+                                                IsEnabled="{Binding CanConvert}"
+                                                Command="{Binding GenerateExecutableCommand}"
+                                                HorizontalContentAlignment="Center" />
+                                        <Button Grid.Column="1" Content="Create MCH file" BorderThickness="1"
+                                                BorderBrush="Black"
+                                                Command="{Binding GenerateMCH}"
+                                                Background="Gainsboro" HorizontalAlignment="Stretch"
+                                                IsEnabled="{Binding CanConvert}"
+                                                HorizontalContentAlignment="Center" />
+                                    </Grid>
 
-                        <Border Margin="0,15,0,0" BorderThickness="1" BorderBrush="Gray" CornerRadius="3" Padding="10">
-                            <Button Padding="0,20" VerticalAlignment="Bottom" Content="Convert!" BorderThickness="1"
-                                    BorderBrush="Black"
-                                    Background="Gainsboro" HorizontalAlignment="Stretch"
-                                    Command="{Binding ConvertImage}"
-                                    CommandParameter="False"
-                                    HorizontalContentAlignment="Center" IsEnabled="{Binding CanConvert}" />
-                        </Border>
+                                    <Button Content="Reset all settings" BorderThickness="1" BorderBrush="Black"
+                                            Background="Gainsboro" HorizontalAlignment="Stretch"
+                                            HorizontalContentAlignment="Center" Command="{Binding ResetAllValues}" />
+                                </StackPanel>
+                            </Border>
+
+                            <Border Margin="0,15,0,0" BorderThickness="1" BorderBrush="Gray" CornerRadius="3"
+                                    Padding="10">
+                                <Button Padding="0,20" VerticalAlignment="Bottom" Content="Convert!"
+                                        BorderThickness="1"
+                                        BorderBrush="Black"
+                                        Background="Gainsboro" HorizontalAlignment="Stretch"
+                                        Command="{Binding ConvertImage}"
+                                        CommandParameter="False"
+                                        HorizontalContentAlignment="Center" IsEnabled="{Binding CanConvert}" />
+                            </Border>
 
 
+                        </StackPanel>
+                    </HeaderedContentControl>
+                </Grid>
+                <Expander IsExpanded="{Binding IsExpanded}" HorizontalAlignment="Stretch" IsVisible="True"
+                          Margin="0,15,0,0">
+                    <Expander.Header>
+                        Command Line
+                    </Expander.Header>
+                    <StackPanel Spacing="15">
+                        <Button Content="Generate RastaConverter Command Line" BorderThickness="1"
+                                BorderBrush="Black"
+                                Background="Gainsboro" HorizontalAlignment="Left"
+                                Command="{Binding ShowRastCommandLineText}"
+                                CommandParameter="False"
+                                HorizontalContentAlignment="Center" />
+                        <TextBox IsReadOnly="False"
+                                 HorizontalAlignment="Left"
+                                 MaxWidth="1130"
+                                 MinWidth="430"
+                                 Text="{Binding RastConverterFullCommandLine}"
+                                 TextWrapping="Wrap" />
                     </StackPanel>
-                </HeaderedContentControl>
-            </Grid>
-            <Expander IsExpanded="{Binding IsExpanded}" HorizontalAlignment="Stretch" IsVisible="True"
-                      Margin="0,15,0,0">
-                <Expander.Header>
-                    Command Line
-                </Expander.Header>
-                <StackPanel Spacing="15">
-                    <Button Content="Generate RastaConverter Command Line" BorderThickness="1"
-                            BorderBrush="Black"
-                            Background="Gainsboro" HorizontalAlignment="Left"
-                            Command="{Binding ShowRastCommandLineText}"
-                            CommandParameter="False"
-                            HorizontalContentAlignment="Center" />
-                    <TextBox IsReadOnly="False"
-                             HorizontalAlignment="Left"
-                             MaxWidth="1130"
-                             MinWidth="430"
-                             Text="{Binding RastConverterFullCommandLine}"
-                             TextWrapping="Wrap" />
-                </StackPanel>
-            </Expander>
-        </StackPanel>
+                </Expander>
+            </StackPanel>
+            <!-- Overlay -->
+            <Border Background="#80000000"
+                    IsVisible="{Binding IsBusy}"
+                    ZIndex="10">
+                <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <ProgressBar IsIndeterminate="True" Width="200" Height="20"/>
+                </Grid>
+            </Border>
+        </Grid>
     </DockPanel>
 </Window>
