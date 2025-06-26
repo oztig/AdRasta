@@ -7,6 +7,10 @@ public class Settings
 {
     public  string IniFileLocation = Path.Combine(Directory.GetCurrentDirectory().Trim(), "RastaControl.ini");
     public string RastaConverterCommand { get; set; } = string.Empty;
+
+    public string BaseRastaCommandLocation => Path.GetDirectoryName(RastaConverterCommand); 
+    public string BaseRastaCommand => Path.GetFileName(RastaConverterCommand);
+    
     public string RC2MCHCommand { get; set; } = string.Empty;
     public string DefaultExecuteCommand { get; set; } = string.Empty;
     public string PaletteDirectory { get; set; } = string.Empty;

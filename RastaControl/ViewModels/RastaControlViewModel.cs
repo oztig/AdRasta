@@ -1,6 +1,7 @@
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Reactive;
@@ -20,6 +21,7 @@ using MsBox.Avalonia.Enums;
 using MsBox.Avalonia.Models;
 using RastaControl.Models;
 using Avalonia.Interactivity;
+using DynamicData;
 using Microsoft.VisualBasic;
 using RastaControl.Services;
 using RastaControl.Utils;
@@ -29,8 +31,27 @@ namespace RastaControl.ViewModels;
 
 public class RastaControlViewModel : ViewModelBase
 {
-   
+    /*private int _selectedConversion;
+
+    public int SelectedConversion
+    {
+        get => _selectedConversion;
+        set => this.RaiseAndSetIfChanged(ref _selectedConversion, value);
+    }
     
+    private ObservableCollection<RastaConversion> _rastaConversions = new ObservableCollection<RastaConversion>();
+
+    public RastaConversion CurrentConversion
+    {
+        get => _rastaConversions[SelectedConversion];
+        set
+        {
+            var rastaConversion = _rastaConversions[SelectedConversion];
+            this.RaiseAndSetIfChanged(ref rastaConversion, value);
+        }
+    }*/
+
+
     private WindowIcon? _icon;
 
     public WindowIcon? AppIcon
@@ -520,6 +541,8 @@ public class RastaControlViewModel : ViewModelBase
     public RastaControlViewModel(Window window)
     {
         _window = window;
+        
+        
         PopulateDefaultValues();
         SetIcon();
 
@@ -786,7 +809,7 @@ public class RastaControlViewModel : ViewModelBase
 
     public async Task ContinueConvert()
     {
-        IsBusy = true;
+   //     IsBusy = true;
         await RastaConverter.ContinueConversion(_settings, SourceFilePath,
             FullDestinationFileName, _window);
 

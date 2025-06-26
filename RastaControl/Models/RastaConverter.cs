@@ -41,6 +41,10 @@ public class RastaConverter
         return fullCommandLine;
     }
 
+    public async Task ContinueConversion(RastaConversion _conversion, Window _window)
+    {
+    }
+
     public async Task ContinueConversion(Settings _settings, string sourceFile, string conversionFile,
         Window _window)
     {
@@ -49,8 +53,6 @@ public class RastaConverter
         var baseCopyFileName = Path.GetFileName(conversionFile);
         var searchPattern = baseCopyFileName.Trim() + "*.*";
         var baseOriginalFileName = Path.GetFileName(sourceFile);
-        var baseCommandLocation = Path.GetDirectoryName(_settings.RastaConverterCommand);
-        var baseCommandName = Path.GetFileName(_settings.RastaConverterCommand);
 
         try
         {
@@ -65,16 +67,18 @@ public class RastaConverter
             await FileUtils.RenameMatchingFilesAsync(continueDirectory, baseCopyFileName, "*.*", "output.png");
 
             // Copy RastaConverter Command
-            await FileUtils.CopyMatchingFilesAsync(baseCommandLocation, continueDirectory, baseCommandName);
+            await FileUtils.CopyMatchingFilesAsync(_settings.BaseRastaCommandLocation, continueDirectory,
+                _settings.BaseRastaCommand);
 
             // Font File
-            await FileUtils.CopyMatchingFilesAsync(baseCommandLocation, continueDirectory, "clacon2.ttf");
+            await FileUtils.CopyMatchingFilesAsync(_settings.BaseRastaCommandLocation, continueDirectory,
+                "clacon2.ttf");
 
             // Palette Dir
             await FileUtils.CopyDirectoryIncludingRoot(_settings.PaletteDirectory, continueDirectory);
 
             // Adjust the .opt and .rp files to allow process to continue
-
+            await Adjust_Opt_And_RpFiles();
 
             // Copy back and clear up?
         }
@@ -83,5 +87,19 @@ public class RastaConverter
             Console.WriteLine(e);
             throw;
         }
+    }
+
+    private async Task Adjust_Opt_And_RpFiles()
+    {
+        // Need to know:
+        //  - location of files
+        // - Basename of original Input source image (copied version)
+        // Need all RastaArguments (as array / collection / whatever)
+        // Change ; Input to baename of copied original image
+        // Change ;CmdLine to /i=basename as above, /o=basename of copied image (the _c one)
+        // Change Palettes to relative Path, so just 'Palettes/name_of_palette_selected'
+        // Rest of the command line to stay the same
+        
+        
     }
 }
