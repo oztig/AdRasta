@@ -1,5 +1,9 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Dto;
+using MsBox.Avalonia.Models;
 using RastaControl.Views;
 
 namespace RastaControl.Services;
@@ -14,5 +18,23 @@ public static class DialogService
         };
 
         return await dialog.GetUserInput(owner);
+    }
+
+    public static async Task<string> ShowYesNo(string title, string message, Window window)
+    {
+            var messageBox = MessageBoxManager.GetMessageBoxCustom(new MessageBoxCustomParams
+            {
+                ContentTitle = title,
+                ContentMessage = message,
+                ButtonDefinitions = new List<ButtonDefinition>
+                {
+                    new ButtonDefinition { Name = "Yes" },
+                    new ButtonDefinition { Name = "No" }
+                },
+                ShowInCenter = true, WindowStartupLocation = WindowStartupLocation.CenterOwner
+            });
+
+            var result = await messageBox.ShowWindowDialogAsync(window);
+            return result;
     }
 }

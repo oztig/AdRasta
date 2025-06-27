@@ -19,7 +19,7 @@ public class Settings
 
     public string HelpFileLocation { get; set; } = string.Empty;
     
-    public bool ConfirmCopyAndReplace { get; set; }
+    public bool CopyWithoutConfirm { get; set; }
 
 
     public Settings()
@@ -52,6 +52,6 @@ public class Settings
         MadsLocation = ini.GetStr("Locations", "MADS", string.Empty);  // "/home/nickp/WUDSN/Tools/ASM/MADS/mads.linux-x86-64";
         PaletteDirectory = ini.GetStr("Locations", "PalettesDir", string.Empty); // "/home/nickp/Downloads/RastaConverter-master/src/Palettes";
         NoNameFilesLocation = ini.GetStr("Locations", "NoNameFilesDir", string.Empty); // "/home/nickp/Downloads/RastaConverter-master/Generator";
-        ConfirmCopyAndReplace = ini.GetBool("Continue", "ConfirmCopyAndReplace", false);
+        CopyWithoutConfirm = ini.GetBool("Continue", "CopyWithoutConfirm", false);
     }
 }

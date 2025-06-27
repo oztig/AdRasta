@@ -8,13 +8,15 @@ using CliWrap.Buffered;
 using MsBox.Avalonia;
 using System.IO;
 using System.Linq;
+using RastaControl.Services;
 using RastaControl.Utils;
 
 namespace RastaControl.Models;
 
 public class RastaConverter
 {
-    public async Task ExecuteRastaConverterCommand(string commandLocation, IReadOnlyList<string> commandLineArguments)
+    public async Task ExecuteRastaConverterCommand(string commandLocation, IReadOnlyList<string> commandLineArguments,
+        string workingDIR = "")
     {
         var stdOutBuffer = new StringBuilder();
         var stdErrBuffer = new StringBuilder();
@@ -22,12 +24,25 @@ public class RastaConverter
         // TODO - Launch, and listen for results coming back - this includes procecss ID, and ???
         try
         {
-            await Cli.Wrap(commandLocation)
-                .WithArguments(commandLineArguments, true)
-                .WithValidation(CommandResultValidation.None)
-                .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
-                .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
-                .ExecuteBufferedAsync();
+            if (workingDIR != "")
+            {
+                await Cli.Wrap(commandLocation)
+                    .WithWorkingDirectory(workingDIR)
+                    .WithArguments(commandLineArguments, true)
+                    .WithValidation(CommandResultValidation.None)
+                    .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
+                    .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
+                    .ExecuteBufferedAsync();
+            }
+            else
+            {
+                await Cli.Wrap(commandLocation)
+                    .WithArguments(commandLineArguments, true)
+                    .WithValidation(CommandResultValidation.None)
+                    .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
+                    .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
+                    .ExecuteBufferedAsync();
+            }
         }
         catch (Exception e)
         {
@@ -85,7 +100,31 @@ public class RastaConverter
             // Adjust the .opt and .rp files to allow process to continue
             await Adjust_Opt_And_RpFiles(commandLineArguments);
 
-            // Copy back and clear up?
+            var continueArgs = new List<string>();
+            continueArgs.Add("/continue");
+
+            // Continue
+            await ExecuteRastaConverterCommand(Path.Combine(continueDirectory, _settings.BaseRastaCommand),
+                continueArgs, continueDirectory);
+
+            var copyBack = false;
+
+            // Confirm ?
+            if (!_settings.CopyWithoutConfirm)
+            {
+                var answer = await DialogService.ShowYesNo("Copy Back To Original?", "This will copy back, and overwrite the original files\n Are you sure?", _window);
+                if (answer.ToString().ToUpper() == "YES")
+                    copyBack = true;
+            }
+
+            if (copyBack)
+            {
+                await FileUtils.MoveMatchingFilesAsync(continueDirectory, baseDirectory,
+                    baseCopyFileName.Trim() + "*.*");
+
+                // Tidy Up
+                await FileUtils.ClearDirectoryAsync(continueDirectory);
+            }
         }
         catch (Exception e)
         {
@@ -109,7 +148,7 @@ public class RastaConverter
             await AdjustFile(rpFileLocation, commandLineArguments);
         }
     }
-    
+
     private async Task AdjustFile(string filename, IReadOnlyList<string> commandLineArguments)
     {
         // - Basename of original Input source image (copied version)
@@ -137,13 +176,13 @@ public class RastaConverter
                 if (line.StartsWith(cmdIdentifier))
                 {
                     var newLine = "";
-                    
+
                     // source image
-                    newLine = cmdIdentifier +  "/i=./" + orignalSourceImageBaseName;
-                    
+                    newLine = cmdIdentifier + "/i=./" + orignalSourceImageBaseName;
+
                     // output image
                     newLine += " /o=./" + copiedImageBaseName;
-                    
+
                     // Filter
                     newLine += " " + commandLineArguments[2];
 

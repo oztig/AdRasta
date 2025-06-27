@@ -1,22 +1,63 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace RastaControl.Utils;
 
 public class FileUtils
 {
+    public static async Task ClearDirectoryAsync(string targetDirectory)
+    {
+        string[] files = Directory.GetFiles(targetDirectory, "*", SearchOption.AllDirectories);
+        
+        // Delete all files
+        foreach (var file in files)
+        {
+            File.SetAttributes(file, FileAttributes.Normal); // Just in case it's read-only
+            File.Delete(file);
+        }
+
+        // Delete all subdirectories
+        foreach (var dir in Directory.GetDirectories(targetDirectory, "*", SearchOption.AllDirectories)
+                     .OrderByDescending(d => d.Length)) // delete from deepest to shallowest
+        {
+            Directory.Delete(dir, true);
+        }
+    }
+    
+    public static async Task MoveMatchingFilesAsync(string sourceDir, string destinationDir, string searchPattern)
+    {
+        string[] files = Directory.GetFiles(sourceDir, searchPattern, SearchOption.AllDirectories);
+
+        foreach (var moveFrom in files)
+        {
+            string destinationPath = Path.Combine(destinationDir, Path.GetFileName(moveFrom));
+
+            // Move the file (overwrites if it exists—optional)
+            try
+            {
+                File.Move(moveFrom, destinationPath, true);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+    }
+
     public static async Task CopyMatchingFilesAsync(string sourceDir, string destinationDir, string searchPattern)
     {
         /*await Task.Run(() =>
         {*/
-            var files = Directory.GetFiles(sourceDir, searchPattern, SearchOption.TopDirectoryOnly);
+        var files = Directory.GetFiles(sourceDir, searchPattern, SearchOption.TopDirectoryOnly);
 
-            foreach (var file in files)
-            {
-                var destPath = Path.Combine(destinationDir, Path.GetFileName(file));
-                File.Copy(file, destPath, overwrite: true);
-            }
+        foreach (var file in files)
+        {
+            var destPath = Path.Combine(destinationDir, Path.GetFileName(file));
+            File.Copy(file, destPath, overwrite: true);
+        }
         /*});*/
     }
 
@@ -38,12 +79,12 @@ public class FileUtils
             }
         });
     }
-    
+
     public static async Task CopyDirectoryIncludingRoot(string sourceDir, string destinationRoot)
     {
         string dirName = Path.GetFileName(sourceDir.TrimEnd(Path.DirectorySeparatorChar));
         string destDir = Path.Combine(destinationRoot, dirName);
-       await CopyDirectory(sourceDir, destDir);
+        await CopyDirectory(sourceDir, destDir);
     }
 
     public static async Task CopyDirectory(string sourceDir, string destDir, bool recursive = true)
@@ -51,7 +92,7 @@ public class FileUtils
         var dir = new DirectoryInfo(sourceDir);
         if (!dir.Exists)
             return;
-        
+
         DirectoryInfo[] dirs = dir.GetDirectories();
         Directory.CreateDirectory(destDir);
 
