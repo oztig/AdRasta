@@ -107,12 +107,12 @@ public class RastaConverter
             await ExecuteRastaConverterCommand(Path.Combine(continueDirectory, _settings.BaseRastaCommand),
                 continueArgs, continueDirectory);
 
-            var copyBack = false;
+            var copyBack = _settings.CopyWithoutConfirm;
 
             // Confirm ?
-            if (!_settings.CopyWithoutConfirm)
+            if (!copyBack)
             {
-                var answer = await DialogService.ShowYesNo("Copy Back To Original?", "This will copy back, and overwrite the original files\n Are you sure?", _window);
+                var answer = await DialogService.ShowYesNo("Copy Back To Original?", "This will copy back, and overwrite the original files, and remove any temporary files\n Are you sure?", _window);
                 if (answer.ToString().ToUpper() == "YES")
                     copyBack = true;
             }
