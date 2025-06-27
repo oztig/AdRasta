@@ -38,7 +38,7 @@ public class RastaControlViewModel : ViewModelBase
         get => _selectedConversion;
         set => this.RaiseAndSetIfChanged(ref _selectedConversion, value);
     }
-    
+
     private ObservableCollection<RastaConversion> _rastaConversions = new ObservableCollection<RastaConversion>();
 
     public RastaConversion CurrentConversion
@@ -541,8 +541,8 @@ public class RastaControlViewModel : ViewModelBase
     public RastaControlViewModel(Window window)
     {
         _window = window;
-        
-        
+
+
         PopulateDefaultValues();
         SetIcon();
 
@@ -754,6 +754,7 @@ public class RastaControlViewModel : ViewModelBase
         }
     }
 
+    // TODO This should be in the RastaConverter object - and be passed a 'RastaConversion' object
     private async Task<IReadOnlyList<string>> GenerateRastaArguments(bool isPreview = false, bool isContinue = false)
     {
         var args = new List<string>();
@@ -809,8 +810,10 @@ public class RastaControlViewModel : ViewModelBase
 
     public async Task ContinueConvert()
     {
-   //     IsBusy = true;
-        await RastaConverter.ContinueConversion(_settings, SourceFilePath,
+        var safeParams = await GenerateRastaArguments(false, true); 
+
+        //     IsBusy = true;
+        await RastaConverter.ContinueConversion(_settings,safeParams, SourceFilePath,
             FullDestinationFileName, _window);
 
         IsBusy = false;

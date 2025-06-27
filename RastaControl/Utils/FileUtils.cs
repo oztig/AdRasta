@@ -71,4 +71,10 @@ public class FileUtils
         }
     }
 
+    // Helper to extract from last "Palettes" onward
+    public static string GetSuffixPath(string path, string anchorFolder)
+    {
+        var index = path.LastIndexOf(anchorFolder, StringComparison.OrdinalIgnoreCase);
+        return (index >= 0) ? path.Substring(index).Replace('\\', '/') : Path.GetFileName(path);
+    }
 }

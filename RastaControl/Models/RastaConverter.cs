@@ -7,6 +7,7 @@ using CliWrap;
 using CliWrap.Buffered;
 using MsBox.Avalonia;
 using System.IO;
+using System.Linq;
 using RastaControl.Utils;
 
 namespace RastaControl.Models;
@@ -45,7 +46,8 @@ public class RastaConverter
     {
     }
 
-    public async Task ContinueConversion(Settings _settings, string sourceFile, string conversionFile,
+    public async Task ContinueConversion(Settings _settings, IReadOnlyList<string> commandLineArguments,
+        string sourceFile, string conversionFile,
         Window _window)
     {
         var baseDirectory = Path.GetDirectoryName(conversionFile);
@@ -77,8 +79,11 @@ public class RastaConverter
             // Palette Dir
             await FileUtils.CopyDirectoryIncludingRoot(_settings.PaletteDirectory, continueDirectory);
 
+            // Generate the RastaConverter Command
+            // TODO Done in other class for now - should be part of this 
+
             // Adjust the .opt and .rp files to allow process to continue
-            await Adjust_Opt_And_RpFiles();
+            await Adjust_Opt_And_RpFiles(commandLineArguments);
 
             // Copy back and clear up?
         }
@@ -89,17 +94,80 @@ public class RastaConverter
         }
     }
 
-    private async Task Adjust_Opt_And_RpFiles()
+    private async Task Adjust_Opt_And_RpFiles(IReadOnlyList<string> commandLineArguments)
     {
         // Need to know:
-        //  - location of files
+        //  - location of files to be adjusted
+        var toBeAdjustedLocation =
+            Path.Combine(Path.GetDirectoryName(commandLineArguments[0]), ".Continue").Replace("/i=", "");
+        var optFileLocation = Path.Combine(toBeAdjustedLocation, "output.png.opt");
+        var rpFileLocation = Path.Combine(toBeAdjustedLocation, "output.png.rp");
+
+        if (File.Exists(optFileLocation) && File.Exists(rpFileLocation))
+        {
+            await AdjustFile(optFileLocation, commandLineArguments);
+            await AdjustFile(rpFileLocation, commandLineArguments);
+        }
+    }
+    
+    private async Task AdjustFile(string filename, IReadOnlyList<string> commandLineArguments)
+    {
         // - Basename of original Input source image (copied version)
-        // Need all RastaArguments (as array / collection / whatever)
-        // Change ; Input to baename of copied original image
+        var orignalSourceImageBaseName = Path.GetFileName(commandLineArguments[0]);
+
+        // Basename of 'Copied' Image
+        var copiedImageBaseName = Path.GetFileName(commandLineArguments[1]);
+
+        // Change ; Input to basename of copied original image
+        var inputIdentifier = "; InputName: ";
+
         // Change ;CmdLine to /i=basename as above, /o=basename of copied image (the _c one)
-        // Change Palettes to relative Path, so just 'Palettes/name_of_palette_selected'
-        // Rest of the command line to stay the same
-        
-        
+        var cmdIdentifier = "; CmdLine: ";
+
+        try
+        {
+            var optContent = await File.ReadAllLinesAsync(filename);
+            var updatedoptLines = optContent.Select(line =>
+            {
+                if (line.StartsWith(inputIdentifier))
+                {
+                    return inputIdentifier + "./" + orignalSourceImageBaseName;
+                }
+
+                if (line.StartsWith(cmdIdentifier))
+                {
+                    var newLine = "";
+                    
+                    // source image
+                    newLine = cmdIdentifier +  "/i=./" + orignalSourceImageBaseName;
+                    
+                    // output image
+                    newLine += " /o=./" + copiedImageBaseName;
+                    
+                    // Filter
+                    newLine += " " + commandLineArguments[2];
+
+                    // Palettes
+                    var palString = FileUtils.GetSuffixPath(commandLineArguments[3], "Palettes");
+                    newLine += " /pal=./" + palString;
+
+                    //everything else
+                    for (var i = 4; i < commandLineArguments.Count - 1; i++)
+                    {
+                        newLine += " " + commandLineArguments[i];
+                    }
+
+                    return newLine;
+                }
+
+                return line;
+            }).ToArray();
+
+            await File.WriteAllLinesAsync(filename, updatedoptLines);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
     }
 }
