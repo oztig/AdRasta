@@ -112,7 +112,9 @@ public class RastaConverter
             // Confirm ?
             if (!copyBack)
             {
-                var answer = await DialogService.ShowYesNo("Copy Back To Original?", "This will copy back, and overwrite the original files, and remove any temporary files\n Are you sure?", _window);
+                var answer = await DialogService.ShowYesNo("Copy Back To Original?",
+                    "This will copy back, and overwrite the original files, and remove any temporary files\n Are you sure?",
+                    _window);
                 if (answer.ToString().ToUpper() == "YES")
                     copyBack = true;
             }
@@ -183,18 +185,31 @@ public class RastaConverter
                     // output image
                     newLine += " /o=./" + copiedImageBaseName;
 
-                    // Filter
-                    newLine += " " + commandLineArguments[2];
+                    var palettesPart = line
+                        .Split(' ')
+                        .FirstOrDefault(part => part.StartsWith("/pal=", StringComparison.OrdinalIgnoreCase));
 
-                    // Palettes
-                    var palString = FileUtils.GetSuffixPath(commandLineArguments[3], "Palettes");
-                    newLine += " /pal=./" + palString;
+                    if (palettesPart != null)
+                    {
+                        // Trim off the /pal= prefix
+                        string path = palettesPart.Substring(5).Trim('"');
+
+                        int idx = path.IndexOf("Palettes/", StringComparison.OrdinalIgnoreCase);
+                        if (idx >= 0)
+                        {
+                            palettesPart = path.Substring(idx);
+                            newLine += " /pal=./" + palettesPart;
+                        }
+                    }
 
                     //everything else
-                    for (var i = 4; i < commandLineArguments.Count - 1; i++)
-                    {
-                        newLine += " " + commandLineArguments[i];
-                    }
+                    int filterIndex = line.IndexOf("/filter=", StringComparison.OrdinalIgnoreCase);
+
+                    var filterArgs = filterIndex >= 0
+                        ? line.Substring(filterIndex)
+                        : null;
+
+                    newLine += " " + filterArgs;
 
                     return newLine;
                 }

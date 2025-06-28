@@ -10,7 +10,7 @@ public class FileUtils
     public static async Task ClearDirectoryAsync(string targetDirectory)
     {
         string[] files = Directory.GetFiles(targetDirectory, "*", SearchOption.AllDirectories);
-        
+
         // Delete all files
         foreach (var file in files)
         {
@@ -25,7 +25,7 @@ public class FileUtils
             Directory.Delete(dir, true);
         }
     }
-    
+
     public static async Task MoveMatchingFilesAsync(string sourceDir, string destinationDir, string searchPattern)
     {
         string[] files = Directory.GetFiles(sourceDir, searchPattern, SearchOption.AllDirectories);
@@ -110,6 +110,30 @@ public class FileUtils
                 CopyDirectory(subDir.FullName, newDestinationDir, recursive);
             }
         }
+    }
+
+    public static async Task<string> GetFirstImage(string currentDir)
+    {
+        string[] imageExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".webp" };
+        
+        var firstImage = Directory.EnumerateFiles(currentDir)
+            .Where(file =>
+            {
+                string fileName = Path.GetFileName(file);
+                string ext = Path.GetExtension(file);
+                bool isImage = imageExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase);
+                int firstDotIndex = fileName.IndexOf('.');
+                string baseName = firstDotIndex >= 0 ? fileName.Substring(0, firstDotIndex) : fileName;
+                bool endsWithUnderscores = baseName.EndsWith("__c", StringComparison.OrdinalIgnoreCase);
+
+                return isImage
+                       && !fileName.StartsWith("output", StringComparison.OrdinalIgnoreCase)
+                       && !endsWithUnderscores;
+            })
+            .FirstOrDefault();
+
+
+        return firstImage;
     }
 
     // Helper to extract from last "Palettes" onward

@@ -32,20 +32,17 @@
                 <Grid RowDefinitions="2*,1*" ColumnDefinitions="Auto,2*" ColumnSpacing="15" RowSpacing="15">
                     <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Input">
                         <StackPanel Spacing="15">
-                            <Button Content="Continue Stopped Conversion" BorderThickness="1" BorderBrush="Black"
-                                    Background="Gainsboro" HorizontalAlignment="Stretch"
-                                    IsDefault="False"
-                                    Command="{Binding ContinueConvert}"
-                                    HorizontalContentAlignment="Center" IsEnabled="{Binding CanContinue}" />
                             <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Source">
                                 <StackPanel>
-                                    <Button Content="{Binding SourceFileBasename}" BorderThickness="1"
+                                    <Button BorderThickness="1"
                                             BorderBrush="Black"
                                             Background="Gainsboro" HorizontalAlignment="Stretch"
                                             HorizontalContentAlignment="Left"
                                             ToolTip.Tip="{Binding SourceFilePath}"
                                             Command="{Binding PickFileCommand}"
-                                            CommandParameter="{Binding SourceFileTypeAction}" />
+                                            CommandParameter="{Binding SourceFileTypeAction}">
+                                        <TextBlock Text="{Binding SourceFileBasename}" xml:space="preserve" />
+                                    </Button>
                                 </StackPanel>
                             </HeaderedContentControl>
                             <HeaderedContentControl Header="Destination Folder">
@@ -55,6 +52,13 @@
                                         HorizontalContentAlignment="Left" Command="{Binding PickFolderCommand}"
                                         IsEnabled="{Binding CanSetDestination}"
                                         Content="{Binding DestinationFolderPath}" />
+                            </HeaderedContentControl>
+                            <HeaderedContentControl Header="Continue">
+                                <Button Content="Continue Stopped Conversion" BorderThickness="1" BorderBrush="Black"
+                                        Background="Gainsboro" HorizontalAlignment="Stretch"
+                                        IsDefault="False"
+                                        Command="{Binding ContinueConvert}"
+                                        HorizontalContentAlignment="Center" IsEnabled="{Binding CanContinue}" />
                             </HeaderedContentControl>
                             <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
                                 <HeaderedContentControl Grid.Row="0" Grid.Column="0" Header="Height">
@@ -297,7 +301,7 @@
                     IsVisible="{Binding IsBusy}"
                     ZIndex="10">
                 <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <ProgressBar IsIndeterminate="True" Width="200" Height="20"/>
+                    <ProgressBar IsIndeterminate="True" Width="200" Height="20" />
                 </Grid>
             </Border>
         </Grid>

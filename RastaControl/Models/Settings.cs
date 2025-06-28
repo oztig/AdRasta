@@ -20,7 +20,8 @@ public class Settings
     public string HelpFileLocation { get; set; } = string.Empty;
     
     public bool CopyWithoutConfirm { get; set; }
-
+    
+    public bool PopulateDefaultFile {get;set;}
 
     public Settings()
     {
@@ -53,5 +54,6 @@ public class Settings
         PaletteDirectory = ini.GetStr("Locations", "PalettesDir", string.Empty); // "/home/nickp/Downloads/RastaConverter-master/src/Palettes";
         NoNameFilesLocation = ini.GetStr("Locations", "NoNameFilesDir", string.Empty); // "/home/nickp/Downloads/RastaConverter-master/Generator";
         CopyWithoutConfirm = ini.GetBool("Continue", "CopyWithoutConfirm", false);
+        PopulateDefaultFile = ini.GetBool("Continue", "PopulateDefaultFile", false);
     }
 }

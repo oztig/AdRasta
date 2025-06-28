@@ -22,6 +22,7 @@ using MsBox.Avalonia.Models;
 using RastaControl.Models;
 using Avalonia.Interactivity;
 using DynamicData;
+using DynamicData.Kernel;
 using Microsoft.VisualBasic;
 using RastaControl.Services;
 using RastaControl.Utils;
@@ -83,8 +84,8 @@ public class RastaControlViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _rastConverterFullCommandLine, value);
     }
 
-    private string FullDestinationFileName => DestinationFolderPath.Trim() +
-                                              DestinationFileBaseName.Trim() + ".png";
+    private string FullDestinationFileName => Path.Combine(DestinationFolderPath.Trim(),
+        DestinationFileBaseName.Trim() + ".png");
 
     private bool _isExpanded;
     private double _previousHeight;
@@ -134,7 +135,7 @@ public class RastaControlViewModel : ViewModelBase
     private Window? _window;
 
     // Input
-    private bool _canContinue = true;
+    private bool _canContinue;
 
     public bool CanContinue
     {
@@ -163,7 +164,7 @@ public class RastaControlViewModel : ViewModelBase
         {
             this.RaiseAndSetIfChanged(ref _destinationFolder, value);
             CopySourceImageToDestination();
-            SetPreviewAndConvertButtons();
+            SetButtons();
         }
     }
 
@@ -177,11 +178,11 @@ public class RastaControlViewModel : ViewModelBase
             value = Path.GetFileName(value);
             this.RaiseAndSetIfChanged(ref _sourceFileBasename, value);
             SetDestinationPicker();
-            SetPreviewAndConvertButtons();
+            SetButtons();
         }
     }
 
-    public string DestinationFileBaseName => Path.GetFileNameWithoutExtension(SourceFileBasename) + "_c";
+    public string DestinationFileBaseName => Path.GetFileNameWithoutExtension(SourceFileBasename) + "__c";
     private string _destinationFileExecutableName => Path.GetFileNameWithoutExtension(SourceFileBasename);
 
     private bool _autoHeight = true;
@@ -501,6 +502,23 @@ public class RastaControlViewModel : ViewModelBase
         SelectedAutoSavePeriod = "0";
     }
 
+    /// <summary>
+    /// Find 1st image in current dir, and set selected dir and file to that
+    /// </summary>
+    private async void SetDefaultSelectedFile()
+    {
+        var currentDir = Directory.GetCurrentDirectory();
+        var continueDir = Path.Combine(currentDir, ".Continue");
+        var firstImage = await FileUtils.GetFirstImage(currentDir);
+
+        if (Directory.Exists(continueDir) && firstImage != null && File.Exists(firstImage))
+        {
+            SourceFilePath = firstImage;
+            DestinationFolderPath = currentDir;
+            CanContinue = true;
+        }
+    }
+
     private void SetPreviewButtonWarning()
     {
         if (SelectedPreColourDistance == "ciede" && SelectedDithering == "knoll")
@@ -555,6 +573,9 @@ public class RastaControlViewModel : ViewModelBase
         ShowAboutCommand = ReactiveCommand.CreateFromTask(async () => await ShowAboutMessage());
         GenerateExecutableCommand = ReactiveCommand.CreateFromTask(async () =>
             await GenerateAndShowOutput());
+
+        if (_settings.PopulateDefaultFile)
+            SetDefaultSelectedFile();
     }
 
 
@@ -680,11 +701,12 @@ public class RastaControlViewModel : ViewModelBase
         CanSetDestination = _sourceFilePath != String.Empty;
     }
 
-    private void SetPreviewAndConvertButtons()
+    private void SetButtons()
     {
         // Can Preview rules - subject to change!
         CanPreview = _destinationFolder != string.Empty;
-        CanConvert = CanPreview && _destinationFolder != string.Empty;
+        CanConvert = CanPreview && _sourceFilePath != string.Empty;
+        CanContinue = Directory.Exists(Path.Combine(_destinationFolder, ".Continue")) && CanConvert;
     }
 
     private void SetCanEditRegisterFile(string value)
@@ -726,32 +748,40 @@ public class RastaControlViewModel : ViewModelBase
         DestinationFolderPath = folders.Count > 0 ? Uri.UnescapeDataString(folders[0].Path.LocalPath) : string.Empty;
     }
 
-    private async Task ViewImage(string fileName)
+    private async Task<bool> ViewImage(string fileName)
     {
         var stdOutBuffer = new StringBuilder();
         var stdErrBuffer = new StringBuilder();
+        var ret = false;
 
         try
         {
-            var result = await Cli.Wrap(_settings.DefaultExecuteCommand)
-                .WithArguments(SafeCommand.QuoteIfNeeded(fileName))
-                .WithValidation(CommandResultValidation.None)
-                .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
-                .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
-                .ExecuteAsync();
+            if (File.Exists(fileName))
+            {
+                var result = await Cli.Wrap(_settings.DefaultExecuteCommand)
+                    .WithArguments(SafeCommand.QuoteIfNeeded(fileName))
+                    .WithValidation(CommandResultValidation.None)
+                    .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
+                    .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
+                    .ExecuteAsync();
 
-            var stdOut = stdOutBuffer.ToString();
-            var stdErr = stdErrBuffer.ToString();
+                var stdOut = stdOutBuffer.ToString();
+                var stdErr = stdErrBuffer.ToString();
 
-
-            if (result.ExitCode != 0)
-                Console.WriteLine("Something crashed");
+                ret = true;
+            }
+            else
+            {
+                ret = false;
+            }
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            throw;
+            ret = false;
         }
+
+        return ret;
     }
 
     // TODO This should be in the RastaConverter object - and be passed a 'RastaConversion' object
@@ -765,9 +795,9 @@ public class RastaControlViewModel : ViewModelBase
         if (!AutoHeight)
             args.Add($"/h={Height}");
 
-        args.Add($"/filter={SelectedResizeFilter}");
-
         args.Add($"/pal={Path.Combine(_settings.PaletteDirectory, SelectedPalette.Trim() + ".act")}");
+        
+        args.Add($"/filter={SelectedResizeFilter}");
 
         args.Add($"/predistance={SelectedPreColourDistance}");
         args.Add($"/dither={SelectedDithering}");
@@ -810,10 +840,10 @@ public class RastaControlViewModel : ViewModelBase
 
     public async Task ContinueConvert()
     {
-        var safeParams = await GenerateRastaArguments(false, true); 
+        var safeParams = await GenerateRastaArguments(false, true);
 
         //     IsBusy = true;
-        await RastaConverter.ContinueConversion(_settings,safeParams, SourceFilePath,
+        await RastaConverter.ContinueConversion(_settings, safeParams, SourceFilePath,
             FullDestinationFileName, _window);
 
         IsBusy = false;
@@ -822,11 +852,9 @@ public class RastaControlViewModel : ViewModelBase
 
     public async Task ConvertImage()
     {
-        // GenerateRastaCommand();
-
         var safeCommand = _settings.RastaConverterCommand;
         var safeParams = await GenerateRastaArguments(); // _rastaCommandLineArguments;
-
+        SetButtons();
         await RastaConverter.ExecuteRastaConverterCommand(safeCommand, safeParams);
         await ViewImage(FullDestinationFileName.Trim());
     }
