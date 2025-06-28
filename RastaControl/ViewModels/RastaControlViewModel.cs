@@ -796,7 +796,7 @@ public class RastaControlViewModel : ViewModelBase
             args.Add($"/h={Height}");
 
         args.Add($"/pal={Path.Combine(_settings.PaletteDirectory, SelectedPalette.Trim() + ".act")}");
-        
+
         args.Add($"/filter={SelectedResizeFilter}");
 
         args.Add($"/predistance={SelectedPreColourDistance}");
@@ -842,12 +842,10 @@ public class RastaControlViewModel : ViewModelBase
     {
         var safeParams = await GenerateRastaArguments(false, true);
 
-        //     IsBusy = true;
         await RastaConverter.ContinueConversion(_settings, safeParams, SourceFilePath,
             FullDestinationFileName, _window);
 
-        IsBusy = false;
-        //  await ViewImage(FullDestinationFileName.Trim());
+        await ViewImage(FullDestinationFileName.Trim());
     }
 
     public async Task ConvertImage()
