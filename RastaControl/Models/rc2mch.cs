@@ -15,7 +15,7 @@ public class rc2mch
 
         try
         {
-            await Cli.Wrap(SafeCommand.QuoteIfNeeded(rc2MCHExecutable))
+            await Cli.Wrap(rc2MCHExecutable)
                 .WithArguments(SafeCommand.QuoteIfNeeded(sourceFile))
                 .WithValidation(CommandResultValidation.None)
                 .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))

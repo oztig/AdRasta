@@ -124,16 +124,21 @@ public class FileUtils
                 bool isImage = imageExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase);
                 int firstDotIndex = fileName.IndexOf('.');
                 string baseName = firstDotIndex >= 0 ? fileName.Substring(0, firstDotIndex) : fileName;
-                bool endsWithUnderscores = baseName.EndsWith("__c", StringComparison.OrdinalIgnoreCase);
+                string optFile = file.Trim() + ".opt";
+                bool optExists = File.Exists(optFile);
 
                 return isImage
-                       && !fileName.StartsWith("output", StringComparison.OrdinalIgnoreCase)
-                       && !endsWithUnderscores;
+                       && !fileName.StartsWith("output", StringComparison.OrdinalIgnoreCase);
             })
             .FirstOrDefault();
 
 
         return firstImage;
+    }
+
+    public static string FileNameNoSpace(string fileName)
+    {
+        return fileName.Replace(" ", "");
     }
 
     // Helper to extract from last "Palettes" onward

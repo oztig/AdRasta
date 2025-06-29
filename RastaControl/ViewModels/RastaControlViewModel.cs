@@ -52,7 +52,7 @@ public class RastaControlViewModel : ViewModelBase
         }
     }*/
 
-
+    private bool _resetDestinationPath = true;
     private WindowIcon? _icon;
 
     public WindowIcon? AppIcon
@@ -119,7 +119,6 @@ public class RastaControlViewModel : ViewModelBase
 
     public ICommand PickFileCommand { get; }
     public ReactiveCommand<Unit, Unit> PickFolderCommand { get; }
-
     public ReactiveCommand<Unit, Unit> ShowAboutCommand { get; }
     public ReactiveCommand<Unit, Unit> ShowHelpCommand { get; }
     public ReactiveCommand<Unit, Unit> GenerateExecutableCommand { get; }
@@ -182,7 +181,18 @@ public class RastaControlViewModel : ViewModelBase
         }
     }
 
-    public string DestinationFileBaseName => Path.GetFileNameWithoutExtension(SourceFileBasename) + "__c";
+    public string DestinationFileBaseName
+    {
+        get
+        {
+            var destFile = Path.GetFileNameWithoutExtension(FileUtils.FileNameNoSpace(SourceFileBasename)) + "__c";
+//            destFile = destFile + Path.GetExtension(SourceFileBasename);
+
+            return destFile;
+        }
+    }
+
+
     private string _destinationFileExecutableName => Path.GetFileNameWithoutExtension(SourceFileBasename);
 
     private bool _autoHeight = true;
@@ -463,12 +473,15 @@ public class RastaControlViewModel : ViewModelBase
     {
         if (File.Exists(SourceFilePath) && Directory.Exists(DestinationFolderPath))
         {
-            var newFilePath = Path.Combine(DestinationFolderPath, SourceFileBasename);
+            var sourceNoSpace = FileUtils.FileNameNoSpace(Path.GetFileName(SourceFilePath));
+            var newFilePath = Path.Combine(DestinationFolderPath, sourceNoSpace);
 
             if (SourceFilePath != newFilePath)
             {
                 File.Copy(SourceFilePath, newFilePath, true);
+                _resetDestinationPath = false;
                 SourceFilePath = newFilePath;
+                _resetDestinationPath = true;
             }
         }
     }
@@ -510,8 +523,11 @@ public class RastaControlViewModel : ViewModelBase
         var currentDir = Directory.GetCurrentDirectory();
         var continueDir = Path.Combine(currentDir, ".Continue");
         var firstImage = await FileUtils.GetFirstImage(currentDir);
+        var firstImage_extension = Path.GetExtension(firstImage);
+        var convImage = Path.Combine(currentDir, Path.GetFileNameWithoutExtension(firstImage) + "__c" + ".png");
 
-        if (Directory.Exists(continueDir) && firstImage != null && File.Exists(firstImage))
+        // if (Directory.Exists(continueDir) && firstImage != null && File.Exists(firstImage))
+        if (firstImage != null && File.Exists(firstImage) && File.Exists(convImage))
         {
             SourceFilePath = firstImage;
             DestinationFolderPath = currentDir;
@@ -699,6 +715,8 @@ public class RastaControlViewModel : ViewModelBase
     private void SetDestinationPicker()
     {
         CanSetDestination = _sourceFilePath != String.Empty;
+        if (_resetDestinationPath)
+            DestinationFolderPath = string.Empty;
     }
 
     private void SetButtons()
@@ -706,7 +724,8 @@ public class RastaControlViewModel : ViewModelBase
         // Can Preview rules - subject to change!
         CanPreview = _destinationFolder != string.Empty;
         CanConvert = CanPreview && _sourceFilePath != string.Empty;
-        CanContinue = Directory.Exists(Path.Combine(_destinationFolder, ".Continue")) && CanConvert;
+        CanContinue = CanConvert;
+        //  CanContinue = Directory.Exists(Path.Combine(_destinationFolder, ".Continue")) && CanConvert;
     }
 
     private void SetCanEditRegisterFile(string value)
