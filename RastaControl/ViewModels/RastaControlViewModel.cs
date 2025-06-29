@@ -708,7 +708,7 @@ public class RastaControlViewModel : ViewModelBase
 
         var messageBox = MessageBoxManager.GetMessageBoxCustom(new MessageBoxCustomParams
         {
-            ContentTitle = "RastaControl (version 1.0 Beta)",
+            ContentTitle = "RastaControl (version 1.29.06 Beta)",
             Icon = Icon.Info,
             ContentMessage = aboutMessage,
             ButtonDefinitions = new List<ButtonDefinition>
