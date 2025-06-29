@@ -126,9 +126,9 @@ public class FileUtils
                 string baseName = firstDotIndex >= 0 ? fileName.Substring(0, firstDotIndex) : fileName;
                 string optFile = file.Trim() + ".opt";
                 bool optExists = File.Exists(optFile);
-
+                bool endsWithcc = baseName.EndsWith("__c", StringComparison.OrdinalIgnoreCase);
                 return isImage
-                       && !fileName.StartsWith("output", StringComparison.OrdinalIgnoreCase);
+                       && !fileName.StartsWith("output", StringComparison.OrdinalIgnoreCase) && !endsWithcc;
             })
             .FirstOrDefault();
 

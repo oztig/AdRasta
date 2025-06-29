@@ -628,10 +628,19 @@ public class RastaControlViewModel : ViewModelBase
 
     private async Task ShowHelpMessage()
     {
-        var result = await Cli.Wrap(_settings.DefaultExecuteCommand)
-            .WithArguments(_settings.HelpFileLocation)
-            .WithValidation(CommandResultValidation.None)
-            .ExecuteAsync();
+        try
+        {
+            var result = await Cli.Wrap(_settings.DefaultExecuteCommand)
+                .WithArguments(SafeCommand.QuoteIfNeeded(_settings.HelpFileLocation))
+                .WithValidation(CommandResultValidation.None)
+                .ExecuteAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+
     }
 
     private async Task GenerateAndShowOutput()
