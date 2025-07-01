@@ -8,6 +8,7 @@ using CliWrap.Buffered;
 using MsBox.Avalonia;
 using System.IO;
 using System.Linq;
+using MsBox.Avalonia.Enums;
 using RastaControl.Services;
 using RastaControl.Utils;
 
@@ -130,8 +131,8 @@ public class RastaConverter
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            MessageBoxManager.GetMessageBoxStandard("Unexpected Error", "ContinueConversion failed" + e.Message,
+                ButtonEnum.Ok, Icon.Error);
         }
     }
 
