@@ -30,9 +30,7 @@ public class Settings
 
     public bool CheckIniFileExists()
     {
-        var currentDir = Directory.GetCurrentDirectory().Trim();
-        Path.Combine(currentDir, "RastaControl.ini");
-        return File.Exists(IniFileLocation);
+    return File.Exists(IniFileLocation);
     }
 
     private void SetDefaults()

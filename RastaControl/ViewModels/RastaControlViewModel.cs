@@ -475,8 +475,10 @@ public class RastaControlViewModel : ViewModelBase
         {
             var sourceNoSpace = FileUtils.FileNameNoSpace(Path.GetFileName(SourceFilePath));
             var newFilePath = Path.Combine(DestinationFolderPath, sourceNoSpace);
-
-            if (SourceFilePath != newFilePath)
+            var fullPath1 = Path.GetFullPath(SourceFilePath).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).ToUpperInvariant();
+            var fullPath2 = Path.GetFullPath(newFilePath).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).ToUpperInvariant();
+            
+            if (fullPath1 != fullPath2)
             {
                 File.Copy(SourceFilePath, newFilePath, true);
                 _resetDestinationPath = false;

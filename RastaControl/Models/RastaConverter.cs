@@ -140,7 +140,7 @@ public class RastaConverter
         // Need to know:
         //  - location of files to be adjusted
         var toBeAdjustedLocation =
-            Path.Combine(Path.GetDirectoryName(commandLineArguments[0]), ".Continue").Replace("/i=", "");
+            Path.Combine(Path.GetDirectoryName(commandLineArguments[0]), ".Continue").Replace("/i=", "").Replace("\\i=", "");
         var optFileLocation = Path.Combine(toBeAdjustedLocation, "output.png.opt");
         var rpFileLocation = Path.Combine(toBeAdjustedLocation, "output.png.rp");
 
