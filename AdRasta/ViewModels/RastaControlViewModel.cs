@@ -617,7 +617,7 @@ public class RastaControlViewModel : ViewModelBase
             if (Debugger.IsAttached)
                 iconPath = new Uri($"avares://AdRasta/Assets/AdRasta-Debug.png");
             else
-                iconPath = new Uri($"avares://AdRasta/Assets/AdRasta-Icon.png");
+                iconPath = new Uri($"avares://AdRasta/Assets/AdRasta-Icon2.png");
 
             AppIcon = new WindowIcon(new Bitmap(AssetLoader.Open(iconPath)));
         }
