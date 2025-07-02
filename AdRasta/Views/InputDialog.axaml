@@ -1,0 +1,19 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:AdRasta.ViewModels"
+        x:DataType="vm:InputDialogViewModel"
+        x:Class="AdRasta.Views.InputDialog"
+        CanResize="False"
+        Title="{Binding Title}" Width="400" Height="130">
+
+    <StackPanel Margin="20 " Spacing="10">
+        <TextBlock Text="Destination Filename:" FontSize="14" />
+        <TextBox Text="{Binding UserInput}" Watermark="{Binding InputWatermark}" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+            <Button BorderThickness="1" BorderBrush="Black" HorizontalContentAlignment="Center"
+                    IsDefault="True" MinWidth="80" Content="OK" Command="{Binding SubmitCommand}" />
+            <Button BorderThickness="1" BorderBrush="Black" Content="Cancel"
+                    HorizontalContentAlignment="Center" Command="{Binding CancelCommand}" MinWidth="80" />
+        </StackPanel>
+    </StackPanel>
+</Window>
