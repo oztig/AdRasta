@@ -52,6 +52,14 @@ public class RastaControlViewModel : ViewModelBase
         }
     }*/
 
+    private string _screenTitle = "Ad Rasta";
+
+    public string ScreenTitle
+    {
+        get => _screenTitle;
+        set => this.RaiseAndSetIfChanged(ref _screenTitle, value);
+    }
+    
     private bool _resetDestinationPath = true;
     private WindowIcon? _icon;
 
@@ -178,6 +186,7 @@ public class RastaControlViewModel : ViewModelBase
             this.RaiseAndSetIfChanged(ref _sourceFileBasename, value);
             SetDestinationPicker();
             SetButtons();
+            SetScreenTitle();
         }
     }
 
@@ -908,5 +917,11 @@ public class RastaControlViewModel : ViewModelBase
     {
         //  GenerateRastaCommand();
         GenerateRastaArguments();
+    }
+    
+    private void SetScreenTitle()
+    {
+        var Title = "Ad Rasta";
+        ScreenTitle = _sourceFileBasename == string.Empty ? Title : Title + "  ( " + _sourceFileBasename + " )";
     }
 }
