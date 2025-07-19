@@ -65,8 +65,8 @@ public class FileUtils
         string replaceWithPattern)
     {
         var fullSearchPattern = baseFileName + addSearchPattern;
-        await Task.Run(() =>
-        {
+        /*await Task.Run(() =>
+        {*/
             var files = Directory.GetFiles(sourceDir, baseFileName + addSearchPattern, SearchOption.TopDirectoryOnly);
 
             foreach (var originalFile in files)
@@ -77,7 +77,7 @@ public class FileUtils
                 File.SetLastWriteTime(newPath, DateTime.Now);
                 File.SetLastAccessTime(newPath, DateTime.Now);
             }
-        });
+        /*});*/
     }
 
     public static async Task CopyDirectoryIncludingRoot(string sourceDir, string destinationRoot)

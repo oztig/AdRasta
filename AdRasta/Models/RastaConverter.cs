@@ -122,6 +122,10 @@ public class RastaConverter
 
             if (copyBack)
             {
+                // Rename back to source file name
+                await FileUtils.RenameMatchingFilesAsync(continueDirectory, "output.png", "*", baseCopyFileName);
+                
+                // Move back to original
                 await FileUtils.MoveMatchingFilesAsync(continueDirectory, baseDirectory,
                     baseCopyFileName.Trim() + "*.*");
 
@@ -141,7 +145,8 @@ public class RastaConverter
         // Need to know:
         //  - location of files to be adjusted
         var toBeAdjustedLocation =
-            Path.Combine(Path.GetDirectoryName(commandLineArguments[0]), ".Continue").Replace("/i=", "").Replace("\\i=", "");
+            Path.Combine(Path.GetDirectoryName(commandLineArguments[commandLineArguments.Count - 3]), ".Continue")
+                .Replace("/i=", "").Replace("\\i=", "");
         var optFileLocation = Path.Combine(toBeAdjustedLocation, "output.png.opt");
         var rpFileLocation = Path.Combine(toBeAdjustedLocation, "output.png.rp");
 
@@ -155,10 +160,10 @@ public class RastaConverter
     private async Task AdjustFile(string filename, IReadOnlyList<string> commandLineArguments)
     {
         // - Basename of original Input source image (copied version)
-        var orignalSourceImageBaseName = Path.GetFileName(commandLineArguments[0]);
+        var orignalSourceImageBaseName = Path.GetFileName(commandLineArguments[commandLineArguments.Count - 3]);
 
         // Basename of 'Copied' Image
-        var copiedImageBaseName = Path.GetFileName(commandLineArguments[1]);
+        var copiedImageBaseName = Path.GetFileName(commandLineArguments[commandLineArguments.Count - 2]);
 
         // Change ; Input to basename of copied original image
         var inputIdentifier = "; InputName: ";
@@ -180,37 +185,18 @@ public class RastaConverter
                 {
                     var newLine = "";
 
+                    // All params up to /i=
+                    newLine = cmdIdentifier + stringParseUtils.ExtractBetweenCmdLineAndInput(line);
+
                     // source image
-                    newLine = cmdIdentifier + "/i=./" + orignalSourceImageBaseName;
+                    newLine += " /i=./" + orignalSourceImageBaseName;
 
-                    // output image
-                    newLine += " /o=./" + copiedImageBaseName;
-
-                    var palettesPart = line
-                        .Split(' ')
-                        .FirstOrDefault(part => part.StartsWith("/pal=", StringComparison.OrdinalIgnoreCase));
-
-                    if (palettesPart != null)
-                    {
-                        // Trim off the /pal= prefix
-                        string path = palettesPart.Substring(5).Trim('"');
-
-                        int idx = path.IndexOf("Palettes/", StringComparison.OrdinalIgnoreCase);
-                        if (idx >= 0)
-                        {
-                            palettesPart = path.Substring(idx);
-                            newLine += " /pal=./" + palettesPart;
-                        }
-                    }
-
-                    //everything else
-                    int filterIndex = line.IndexOf("/filter=", StringComparison.OrdinalIgnoreCase);
-
-                    var filterArgs = filterIndex >= 0
-                        ? line.Substring(filterIndex)
-                        : null;
-
-                    newLine += " " + filterArgs;
+                    // Palette
+                    var strLengh = commandLineArguments[commandLineArguments.Count - 1].Length;
+                    var lastSlashIndex = commandLineArguments[commandLineArguments.Count - 1].LastIndexOf('/');
+                    if (lastSlashIndex != -1 && lastSlashIndex + 1 < strLengh)
+                        newLine += " /pal=./Palettes/" + commandLineArguments[commandLineArguments.Count - 1]
+                            .Substring(lastSlashIndex + 1);
 
                     return newLine;
                 }

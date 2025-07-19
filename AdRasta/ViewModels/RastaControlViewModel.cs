@@ -59,7 +59,7 @@ public class RastaControlViewModel : ViewModelBase
         get => _screenTitle;
         set => this.RaiseAndSetIfChanged(ref _screenTitle, value);
     }
-    
+
     private bool _resetDestinationPath = true;
     private WindowIcon? _icon;
 
@@ -484,9 +484,11 @@ public class RastaControlViewModel : ViewModelBase
         {
             var sourceNoSpace = FileUtils.FileNameNoSpace(Path.GetFileName(SourceFilePath));
             var newFilePath = Path.Combine(DestinationFolderPath, sourceNoSpace);
-            var fullPath1 = Path.GetFullPath(SourceFilePath).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).ToUpperInvariant();
-            var fullPath2 = Path.GetFullPath(newFilePath).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).ToUpperInvariant();
-            
+            var fullPath1 = Path.GetFullPath(SourceFilePath)
+                .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).ToUpperInvariant();
+            var fullPath2 = Path.GetFullPath(newFilePath)
+                .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).ToUpperInvariant();
+
             if (fullPath1 != fullPath2)
             {
                 File.Copy(SourceFilePath, newFilePath, true);
@@ -499,31 +501,31 @@ public class RastaControlViewModel : ViewModelBase
 
     private void PopulateDefaultValues()
     {
-        Brightness = 0;
-        Contrast = 0;
-        Gamma = (decimal)1.0;
-        AutoHeight = true;
-        CanPreview = false;
-        CanConvert = false;
-        Height = 240;
-        NumberOfSolutions = 1;
-        DitheringStrength = 1;
-        DitheringRandomness = 0;
-        MaskStrength = (decimal)1.0;
-        SourceFilePath = string.Empty;
-        DestinationFolderPath = string.Empty;
-        MaskFilePath = string.Empty;
-        RegisterOnOffFilePath = string.Empty;
-        RastConverterFullCommandLine = string.Empty;
+        Brightness = defaultValues.defaultBrightness;
+        Contrast = defaultValues.defaultContrast;
+        Gamma = defaultValues.defaultGamma;
+        AutoHeight = defaultValues.defaultAutoHeight;
+        CanPreview = defaultValues.defaultCanPreview;
+        CanConvert = defaultValues.defaultCanConvert;
+        Height = defaultValues.defaultHeight;
+        NumberOfSolutions = defaultValues.defaultNumberOfSolutions;
+        DitheringStrength = defaultValues.defaultDitheringStrength;
+        DitheringRandomness = defaultValues.defaultDitheringRandomness;
+        MaskStrength = defaultValues.defaultMaskStrength;
+        SourceFilePath = defaultValues.defaultSourceFilePath;
+        DestinationFolderPath = defaultValues.defaultDestinationFolderPath;
+        MaskFilePath = defaultValues.defaultMaskFilePath;
+        RegisterOnOffFilePath = defaultValues.defaultRegisterOnOffFilePath;
+        RastConverterFullCommandLine = defaultValues.defaultRastConverterFullCommandLine;
 
-        SelectedPalette = "laoo";
-        SelectedResizeFilter = "box";
-        SelectedPreColourDistance = "ciede";
-        SelectedDithering = "none";
-        SelectedColourDistance = "yuv";
-        SelectedInitialState = "random";
-        SelectedThread = SourceData.TotalThreads[^1];
-        SelectedAutoSavePeriod = "0";
+        SelectedPalette = defaultValues.defaultSelectedPalette;
+        SelectedResizeFilter = defaultValues.defaultSelectedResizeFilter;
+        SelectedPreColourDistance = defaultValues.defaultSelectedPreColourDistance;
+        SelectedDithering = defaultValues.defaultSelectedDithering;
+        SelectedColourDistance = defaultValues.defaultSelectedColourDistance;
+        SelectedInitialState = defaultValues.defaultSelectedInitialState;
+        SelectedThread = SourceData.TotalThreads[^defaultValues.defaultSelectedThread];
+        SelectedAutoSavePeriod = defaultValues.defaultSelectedAutoSavePeriod;
     }
 
     /// <summary>
@@ -651,7 +653,6 @@ public class RastaControlViewModel : ViewModelBase
             Console.WriteLine(e);
             throw;
         }
-
     }
 
     private async Task GenerateAndShowOutput()
@@ -828,18 +829,17 @@ public class RastaControlViewModel : ViewModelBase
     {
         var args = new List<string>();
 
-        args.Add($"/i={SourceFilePath}");
-        args.Add($"/o={FullDestinationFileName}");
-
         if (!AutoHeight)
             args.Add($"/h={Height}");
 
-        args.Add($"/pal={Path.Combine(_settings.PaletteDirectory, SelectedPalette.Trim() + ".act")}");
+        if (SelectedResizeFilter != defaultValues.defaultSelectedResizeFilter)
+            args.Add($"/filter={SelectedResizeFilter}");
 
-        args.Add($"/filter={SelectedResizeFilter}");
+        if (_selectedPreColourDistance != defaultValues.defaultSelectedPreColourDistance)
+            args.Add($"/predistance={SelectedPreColourDistance}");
 
-        args.Add($"/predistance={SelectedPreColourDistance}");
-        args.Add($"/dither={SelectedDithering}");
+        if (_selectedDithering != defaultValues.defaultSelectedDithering)
+            args.Add($"/dither={SelectedDithering}");
 
         if (SelectedDithering != "none")
         {
@@ -847,9 +847,14 @@ public class RastaControlViewModel : ViewModelBase
             args.Add($"/dither_rand={DitheringRandomness}");
         }
 
-        args.Add($"/brightness={Brightness}");
-        args.Add($"/contrast={Contrast}");
-        args.Add($"/gamma={Gamma}");
+        if (Brightness != defaultValues.defaultBrightness)
+            args.Add($"/brightness={Brightness}");
+
+        if (Contrast != defaultValues.defaultContrast)
+            args.Add($"/contrast={Contrast}");
+
+        if (Gamma != defaultValues.defaultGamma)
+            args.Add($"/gamma={Gamma}");
 
         if (!string.IsNullOrWhiteSpace(MaskFilePath))
         {
@@ -860,10 +865,18 @@ public class RastaControlViewModel : ViewModelBase
         if (!string.IsNullOrWhiteSpace(RegisterOnOffFilePath))
             args.Add($"/onoff={RegisterOnOffFilePath}");
 
-        args.Add($"/distance={SelectedColourDistance}");
-        args.Add($"/init={SelectedInitialState}");
-        args.Add($"/s={NumberOfSolutions}");
-        args.Add($"/save={SelectedAutoSavePeriod}");
+        if (SelectedColourDistance != defaultValues.defaultSelectedColourDistance)
+            args.Add($"/distance={SelectedColourDistance}");
+
+        if (SelectedInitialState != defaultValues.defaultSelectedInitialState)
+            args.Add($"/init={SelectedInitialState}");
+
+        if (NumberOfSolutions != defaultValues.defaultNumberOfSolutions)
+            args.Add($"/s={NumberOfSolutions}");
+
+        if (SelectedAutoSavePeriod != defaultValues.defaultSelectedAutoSavePeriod)
+            args.Add($"/save={SelectedAutoSavePeriod}");
+
         args.Add($"/threads={SelectedThread}");
 
         if (isPreview)
@@ -871,6 +884,10 @@ public class RastaControlViewModel : ViewModelBase
 
         if (isContinue)
             args.Add("/continue");
+
+        args.Add($"/i={SourceFilePath}");
+        args.Add($"/o={FullDestinationFileName}");
+        args.Add($"/pal={Path.Combine(_settings.PaletteDirectory, SelectedPalette.Trim() + ".act")}");
 
         RastConverterFullCommandLine = await RastaConverter.GenerateFullCommandLineString(_settings, args);
 
@@ -918,7 +935,7 @@ public class RastaControlViewModel : ViewModelBase
         //  GenerateRastaCommand();
         GenerateRastaArguments();
     }
-    
+
     private void SetScreenTitle()
     {
         var Title = "Ad Rasta";
