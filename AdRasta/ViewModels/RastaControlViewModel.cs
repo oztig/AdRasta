@@ -769,7 +769,6 @@ public class RastaControlViewModel : ViewModelBase
         {
             Title = "Select a file",
             AllowMultiple = false,
-
             FileTypeFilter = new[] { fileType },
         });
 
@@ -843,8 +842,11 @@ public class RastaControlViewModel : ViewModelBase
 
         if (SelectedDithering != "none")
         {
-            args.Add($"/dither_val={DitheringStrength}");
-            args.Add($"/dither_rand={DitheringRandomness}");
+            if (DitheringStrength != defaultValues.defaultDitheringStrength)
+                args.Add($"/dither_val={DitheringStrength}");
+            
+            if (DitheringRandomness != defaultValues.defaultDitheringRandomness)
+                args.Add($"/dither_rand={DitheringRandomness}");
         }
 
         if (Brightness != defaultValues.defaultBrightness)
@@ -859,7 +861,9 @@ public class RastaControlViewModel : ViewModelBase
         if (!string.IsNullOrWhiteSpace(MaskFilePath))
         {
             args.Add($"/details={MaskFilePath}");
-            args.Add($"/details_val={MaskStrength}");
+            
+            if (MaskStrength != defaultValues.defaultMaskStrength)
+                args.Add($"/details_val={MaskStrength}");
         }
 
         if (!string.IsNullOrWhiteSpace(RegisterOnOffFilePath))
