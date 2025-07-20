@@ -124,7 +124,7 @@ public class RastaConverter
             {
                 // Rename back to source file name
                 await FileUtils.RenameMatchingFilesAsync(continueDirectory, "output.png", "*", baseCopyFileName);
-                
+
                 // Move back to original
                 await FileUtils.MoveMatchingFilesAsync(continueDirectory, baseDirectory,
                     baseCopyFileName.Trim() + "*.*");
@@ -192,11 +192,11 @@ public class RastaConverter
                     newLine += " /i=./" + orignalSourceImageBaseName;
 
                     // Palette
-                    var strLengh = commandLineArguments[commandLineArguments.Count - 1].Length;
-                    var lastSlashIndex = commandLineArguments[commandLineArguments.Count - 1].LastIndexOf('/');
-                    if (lastSlashIndex != -1 && lastSlashIndex + 1 < strLengh)
-                        newLine += " /pal=./Palettes/" + commandLineArguments[commandLineArguments.Count - 1]
-                            .Substring(lastSlashIndex + 1);
+                    var lastArg = commandLineArguments[^1];
+                    var lastSlashIndex = lastArg.LastIndexOfAny(new[] { '/', '\\' });
+
+                    if (lastSlashIndex >= 0 && lastSlashIndex < lastArg.Length - 1)
+                        newLine += $" /pal=./Palettes/{lastArg[(lastSlashIndex + 1)..]}";
 
                     return newLine;
                 }
