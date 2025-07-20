@@ -627,6 +627,8 @@ public class RastaControlViewModel : ViewModelBase
         {
             if (Debugger.IsAttached)
                 iconPath = new Uri($"avares://AdRasta/Assets/AdRasta-Debug.png");
+            else if (OperatingSystem.IsWindows())
+                iconPath = new Uri($"avares://AdRasta/Assets/AdRasta-Icon2.ico");
             else
                 iconPath = new Uri($"avares://AdRasta/Assets/AdRasta-Icon2.png");
 
@@ -844,7 +846,7 @@ public class RastaControlViewModel : ViewModelBase
         {
             if (DitheringStrength != defaultValues.defaultDitheringStrength)
                 args.Add($"/dither_val={DitheringStrength}");
-            
+
             if (DitheringRandomness != defaultValues.defaultDitheringRandomness)
                 args.Add($"/dither_rand={DitheringRandomness}");
         }
@@ -861,7 +863,7 @@ public class RastaControlViewModel : ViewModelBase
         if (!string.IsNullOrWhiteSpace(MaskFilePath))
         {
             args.Add($"/details={MaskFilePath}");
-            
+
             if (MaskStrength != defaultValues.defaultMaskStrength)
                 args.Add($"/details_val={MaskStrength}");
         }
