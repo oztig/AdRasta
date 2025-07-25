@@ -722,7 +722,7 @@ public class RastaControlViewModel : ViewModelBase
 
         var messageBox = MessageBoxManager.GetMessageBoxCustom(new MessageBoxCustomParams
         {
-            ContentTitle = "AdRasta (version 1.3.2 Beta)",
+            ContentTitle = "AdRasta (version 1.3.2-1 Beta)",
             Icon = Icon.Info,
             ContentMessage = aboutMessage,
             ButtonDefinitions = new List<ButtonDefinition>
