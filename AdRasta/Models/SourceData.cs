@@ -105,6 +105,7 @@ public class SourceData
     private void PopulateAutoSavePeriods()
     {
         AutoSavePeriods.Clear();
+        AutoSavePeriods.Add("auto");
         AutoSavePeriods.Add("0");
         AutoSavePeriods.Add("1000");
         AutoSavePeriods.Add("10000");

@@ -25,5 +25,5 @@ public class defaultValues
     public static string defaultSelectedColourDistance = "yuv";
     public static string defaultSelectedInitialState = "random";
     public static int defaultSelectedThread = 1;
-    public static string defaultSelectedAutoSavePeriod = "0";
+    public static string defaultSelectedAutoSavePeriod = "auto";
 }
