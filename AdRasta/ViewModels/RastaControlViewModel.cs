@@ -678,8 +678,12 @@ public class RastaControlViewModel : ViewModelBase
 
     private async Task ShowAboutMessage()
     {
-        var aboutMessage = "RastaConverter by Jakub Debski 2012-2025\n";
-        aboutMessage += "AdRasta by oztig (Nick Pearson)\n";
+        var dateNow = DateTime.Now;
+        var iconPath = new Uri($"avares://AdRasta/Assets/AdRasta-Icon2.ico");
+        var customIcon = new Bitmap(AssetLoader.Open(iconPath));
+
+        var aboutMessage = "RastaConverter by Jakub 'Ilmenit' Debski 2012-" + dateNow.Year + "\n";
+        aboutMessage += "AdRasta by Nick 'oztig' Pearson\n";
         aboutMessage += "MADS and RC2MCH by Tomasz Biela\n\n";
         aboutMessage += "Special Thanks to:\n";
         aboutMessage += "Arkadiusz Lubaszka for the original RC GUI\n\n";
@@ -688,8 +692,8 @@ public class RastaControlViewModel : ViewModelBase
 
         var messageBox = MessageBoxManager.GetMessageBoxCustom(new MessageBoxCustomParams
         {
-            ContentTitle = "AdRasta (version 1.3.2-1 Beta)",
-            Icon = Icon.Info,
+            ContentTitle = "AdRasta (v1.4)",
+            ImageIcon = customIcon,
             ContentMessage = aboutMessage,
             ButtonDefinitions = new List<ButtonDefinition>
             {
@@ -700,6 +704,7 @@ public class RastaControlViewModel : ViewModelBase
 
         var result = await messageBox.ShowWindowDialogAsync(_window);
     }
+
 
     private void SetDestinationPicker()
     {
