@@ -607,18 +607,6 @@ public class RastaControlViewModel : ViewModelBase
             SetDefaultSelectedFile();
     }
 
-
-    private async Task OnLoaded(object? sender, RoutedEventArgs e)
-    {
-        await CheckInitialSetup();
-    }
-
-    public async Task CheckInitialSetup()
-    {
-        if (!_settings.CheckIniFileExists())
-            await ShowMissingIniFile();
-    }
-
     private void SetIcon()
     {
         Uri iconPath;
@@ -686,28 +674,6 @@ public class RastaControlViewModel : ViewModelBase
             .WithArguments(toViewParams, true)
             .WithValidation(CommandResultValidation.None)
             .ExecuteAsync();
-    }
-
-    private async Task ShowMissingIniFile()
-    {
-        var missingFileMessage = "Cannot find '" + _settings.IniFileLocation;
-
-        var messageBox = MessageBoxManager.GetMessageBoxCustom(new MessageBoxCustomParams
-        {
-            ContentTitle = "Missing AdRasta.ini",
-            Icon = Icon.Error,
-            ContentMessage = missingFileMessage,
-            ButtonDefinitions = new List<ButtonDefinition>
-            {
-                new ButtonDefinition { Name = "OK" },
-            },
-            ShowInCenter = true, WindowStartupLocation = WindowStartupLocation.CenterOwner
-        });
-
-        var result = await messageBox.ShowWindowDialogAsync(_window);
-
-        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktopApp)
-            desktopApp.Shutdown();
     }
 
     private async Task ShowAboutMessage()

@@ -5,7 +5,7 @@ namespace AdRasta.Models;
 
 public class Settings
 {
-    public  string IniFileLocation = Path.Combine(Directory.GetCurrentDirectory().Trim(), "AdRasta.ini");
+    public  static string IniFileLocation = Path.Combine(Directory.GetCurrentDirectory().Trim(), "AdRasta.ini");
     public string RastaConverterCommand { get; set; } = string.Empty;
 
     public string BaseRastaCommandLocation => Path.GetDirectoryName(RastaConverterCommand); 
@@ -28,12 +28,12 @@ public class Settings
         SetDefaults();
     }
 
-    public bool CheckIniFileExists()
+    public static bool CheckIniFileExists()
     {
     return File.Exists(IniFileLocation);
     }
 
-    private void SetDefaults()
+    public bool  SetDefaults()
     {
         if (OperatingSystem.IsWindows())
             DefaultExecuteCommand = "explorer";
@@ -41,6 +41,9 @@ public class Settings
             DefaultExecuteCommand = "xdg-open";
         else
             DefaultExecuteCommand = "explorer";
+        
+        if (!CheckIniFileExists())
+            return false;
         
         var ini = new Sini.IniFile(IniFileLocation);
         
@@ -53,5 +56,7 @@ public class Settings
         NoNameFilesLocation = ini.GetStr("Locations", "NoNameFilesDir", string.Empty); // "/home/nickp/Downloads/RastaConverter-master/Generator";
         CopyWithoutConfirm = ini.GetBool("Continue", "CopyWithoutConfirm", false);
         PopulateDefaultFile = ini.GetBool("Continue", "PopulateDefaultFile", false);
+
+        return true;
     }
 }
